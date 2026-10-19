@@ -1,0 +1,8 @@
+node_modules/
+.vercel/
+.env*
+*.backup.json
+*backup*.json
+.DS_Store
+
+node_modules

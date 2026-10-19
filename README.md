@@ -43,6 +43,12 @@ A concealed search preview is not a device lock or encryption. Data is not end-t
 
 ## Still outside this milestone
 
-Live cloud provisioning/owner setup and real cross-device tests; GitHub remote creation/linking; live browser visual/accessibility testing; fully normalized cloud schema; full offline service worker; attachments vault; advanced recurrence; drag/resize dashboards; rich-text editor; full custom workflow builder; notification infrastructure; CSV/ICS imports; bank integrations; sophisticated wardrobe/room canvases; full v5 automation engine.
+Live cloud provisioning/owner setup and real cross-device tests; Vercel Git integration; live browser visual/accessibility testing; fully normalized cloud schema; full offline service worker; attachments vault; advanced recurrence; drag/resize dashboards; rich-text editor; full custom workflow builder; notification infrastructure; CSV/ICS imports; bank integrations; sophisticated wardrobe/room canvases; full v5 automation engine.
 
 No database, hosting plan, external account, billing setting, or production deployment is changed automatically by this source.
+
+## GitHub source
+
+Repository: https://github.com/bellehalli/Arabella-sWorld
+
+The expanded build is on the `dreamhub-v2` review branch. The existing production site remains separate until release review.

@@ -1,0 +1,1 @@
+{"name":"arabella-dreamhub","version":"2.0.0-review.1","private":true,"type":"module","scripts":{"test":"node --test tests/*.test.mjs","build:sdk":"node build-sdk.mjs"},"dependencies":{"@supabase/supabase-js":"2.118.0"},"devDependencies":{"esbuild":"0.25.12","linkedom":"0.18.13"}}
