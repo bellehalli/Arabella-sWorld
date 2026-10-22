@@ -1,9 +1,9 @@
 name: DreamHub checks
 on:
   pull_request:
-    branches: [dreamhub-v2]
+    branches: [main, dreamhub-v2]
   push:
-    branches: [feature/adhd-life-command-center, dreamhub-v2]
+    branches: [main, feature/dreamhub-3-functional-integration, dreamhub-v2]
 jobs:
   validate:
     runs-on: ubuntu-latest
