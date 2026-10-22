@@ -4,7 +4,7 @@ This is a code-presence audit, **not** a claim that the full requirements are im
 
 ## Step 1 — Shared data and records
 - Existing: typed records, version history, soft delete/restore, draft recovery, JSON merge import, JSON/CSV/Markdown/ICS exports, links, local and Supabase snapshot persistence.
-- Added in this branch: a reusable global record finder, searching titles, tags, record type, and nonsensitive structured fields, with privacy tests.
+- Added in this branch: a reusable global record finder, searching titles, tags, record type, and nonsensitive structured fields, with privacy tests. Verified JSON archives now include SHA-256 integrity checks and a record inventory; importing verified archives rejects altered files, and orphaned record links are reported. Legacy imports remain supported.
 - Still missing or unverified: universal saved searches, fully normalized per-record cloud schema, private attachment storage, rich-text editor, conflict resolution on separate devices, reliable offline sync, and full backup restoration drills.
 
 ## Step 2 — Daily operations
@@ -21,3 +21,9 @@ This is a code-presence audit, **not** a claim that the full requirements are im
 3. Run CI and staging browser tests, including owner/other-account authorization, cross-device sync, offline behavior, backups and restore.
 4. Keep changes on a review branch until explicitly approved for production.
 5. Visual redesign remains last.
+
+## Important safety boundaries
+- SHA-256 detects accidental changes to an archive; it is not encryption, authentication, a signature, or a guarantee that a malicious party has not replaced both archive and checksum.
+- The backup is plaintext and may contain sensitive records. Keep it in a secure location. No server-side backups or recovery guarantees are implied.
+- Attachments remain in their current format; no private Supabase Storage bucket is provisioned in this branch.
+- Full Step 1 acceptance still requires an actual restore drill, two-device conflict tests, and offline and private-media work.
