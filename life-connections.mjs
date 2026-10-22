@@ -1,5 +1,5 @@
 // Pure relationship engine: no network access, no hidden mutation, no automatic scheduling.
-export const relationKinds=['depends_on','blocks','belongs_to','uses','replenishes','follows_up','related_to'];
+export const relationKinds=['depends_on','blocked_by','blocks','belongs_to','uses','replenishes','follows_up','related_to'];
 export function linksFor(records,id){return records.filter(r=>!r.deletedAt).flatMap(r=>(r.data?.relations||[]).filter(l=>l?.targetId===id||r.id===id).map(l=>({sourceId:r.id,targetId:l.targetId,kind:l.kind})))}
 export function validateRelations(records){const ids=new Set(records.filter(r=>!r.deletedAt).map(r=>r.id));const problems=[];for(const r of records){if(r.deletedAt)continue;for(const l of r.data?.relations||[]){if(!l||!relationKinds.includes(l.kind)||!ids.has(l.targetId)||l.targetId===r.id)problems.push({id:r.id,relation:l,reason:'Invalid or missing relation'});}}return problems}
 export function blockedItems(records){const byId=new Map(records.filter(r=>!r.deletedAt).map(r=>[r.id,r]));return records.filter(r=>!r.deletedAt&&r.status!=='Done').flatMap(r=>{const blockers=(r.data?.relations||[]).filter(l=>l.kind==='depends_on'||l.kind==='blocked_by').map(l=>byId.get(l.targetId)).filter(x=>x&&x.status!=='Done');return blockers.length?[{record:r,blockers}]:[]})}
