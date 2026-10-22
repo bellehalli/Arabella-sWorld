@@ -43,3 +43,9 @@ Date: 2026-10-22. Scope: development branch only. Sources: Master Bible v5 pp. 6
 
 ## Gate
 Do not mark Audit 1 PASS until applicable Bible v5 criteria are supported by source, tests, and browser/security evidence. No production deployment or migration authorized.
+
+## Repair progress — 2026-10-22
+- IMPLEMENTED (awaiting CI): `record-integrity.mjs` detects broken, deleted-target, self and duplicate links without mutation; preview proposes repairs but does not execute them.
+- IMPLEMENTED (awaiting CI): `restore-drill.mjs` exercises verified JSON archives against an isolated in-memory Store and checks record equality and link integrity; `tests/record-integrity-and-drill.test.mjs` covers success and failure cases.
+- STILL OPEN: integrate repair preview into UI; secure offline queue and reconnection flow; production-like restore with media; private attachment staging authorization; full accessibility/browser/security tests; rich universal editor and saved search UI; quota/cost monitoring; cross-device conflict resolution.
+- These changes do not certify Audit 1 or authorize production deployment.
