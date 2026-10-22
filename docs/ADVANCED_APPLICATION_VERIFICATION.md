@@ -48,3 +48,37 @@ C. Add regression tests for missing advanced flows, repair failing logic in the 
 D. Exercise integration across calendar, money, academy, studio and personal worlds.
 E. Staging browser testing with synthetic data and separate owner/test account when available.
 F. User acceptance review; only then discuss production readiness.
+
+## Master Bible v5 compliance gate — mandatory
+Source of truth: `DreamHub_Master_Bible_COMPLETE_v5(1).pdf` (user-provided, 68 pages). Existing architecture docs are supporting references, not substitutes.
+
+For EACH route, application, shared service and integration:
+1. Extract each applicable Bible requirement with page number and stable ID (BIBLE-<page>-<ordinal>).
+2. Map requirement to UI route, source module, data entity, test and observed evidence.
+3. Assign one of PASS (tested), PARTIAL (some behaviors proven), FAIL (verified broken), MISSING (not implemented), BLOCKED (requires isolated environment/provider), or NOT APPLICABLE (justified).
+4. Record the exact discrepancy, severity (critical/high/medium/low), repair ticket, and regression test.
+5. Rerun functional, privacy, accessibility, offline and recovery checks after fixes.
+6. Application is certified ONLY when every applicable requirement is PASS, or an explicit owner-approved exception is documented. No inference from presence of code or green CI.
+
+### Bible v5 launch-wide mandatory gates
+| Bible requirement | Evidence | Current status |
+|---|---|---|
+| Capture on one device, locate on another without loss/duplicates | real two-device scenario | BLOCKED |
+| Save offline journal with truthful pending-sync and conflict protection | offline/reconnect browser test | MISSING / UNVERIFIED |
+| Complete task and goal workflows without external integrations | create→complete→restore test | PARTIAL |
+| Export/import JSON/CSV and media manifests with sample restore | checksum + actual restoration drill | PARTIAL |
+| Anonymous and different authenticated user cannot access private records/files | RLS and direct API test | BLOCKED |
+| Every automation can be previewed, inspected, disabled, with last-run result | per-rule UI tests | PARTIAL |
+| No unapproved external sends, purchases, publishing or changes | negative action tests | PARTIAL |
+| Keyboard/mobile/assistive-tech/reduced-motion usability | real browser audits | BLOCKED |
+| Outage does not prevent promised offline manual features | simulated outage test | MISSING / UNVERIFIED |
+| $0-extra recurring cost guardrails and usage caps | quota/off-switch tests | PARTIAL |
+| Cross-module integrity and idempotent linking | scenario integration tests | PARTIAL |
+| Backup restore, rollback path and no data loss | recovery drill | BLOCKED |
+
+### Evidence table format
+| Bible ID/page | Requirement | Route | Code | Test | Result | Severity | Fix |
+|---|---|---|---|---|---|---|---|
+| To populate from complete PDF | Exact testable criterion | Route | Module | Test name/run | Pending | Pending | Pending |
+
+Do not declare any department, Step 1, or the overall site Bible-compliant while mandatory requirements are missing, blocked or untested. Deferred private attachment staging remains BLOCKED, not PASS.
