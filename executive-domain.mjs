@@ -1,0 +1,5 @@
+// Additive records for DreamHub 3; keep existing schema 2 unchanged until migration is tested.
+export const domainTypes=['shift','earnings','lead','outreach','followup','proposal','invoice','course','lesson','assignment','exam','study','experiencePlan','scheduleDecision'];
+export function domainRecord(type,{id,title,date='',links=[],data={},status='Planned'}={}){if(!domainTypes.includes(type)||!id||!title||!Array.isArray(links)||!data||typeof data!=='object'||Array.isArray(data))throw Error('Invalid record');return {type,id,title,date,links:[...links],data:{...data},status};}
+export function validateLinks(records){const ids=new Set(),errors=[];for(const r of records){if(ids.has(r.id))errors.push('duplicate:'+r.id);ids.add(r.id);}for(const r of records)for(const id of r.links||[])if(!ids.has(id))errors.push('missing:'+r.id+':'+id);return errors;}
+export function earnings({wages=0,cashTips=0,cardTips=0,tipout=0}={}){if([wages,cashTips,cardTips,tipout].some(x=>!Number.isSafeInteger(x)||x<0))throw Error('Invalid earnings');return {gross:wages+cashTips+cardTips,afterTipout:wages+cashTips+cardTips-tipout,received:false};}
