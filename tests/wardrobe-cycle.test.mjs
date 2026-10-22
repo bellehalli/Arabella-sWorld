@@ -1,0 +1,6 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {wearTransition,completeGarmentCare,careCheckDue,wearLimit} from '../wardrobe-cycle.mjs';
+const garment=(category,data={})=>({id:'g',type:'wardrobe',version:1,deletedAt:null,data:{category,laundry:'Clean',...data}});
+test('top goes to laundry after one wear',()=>{const worn=wearTransition(garment('Top'),{date:'2026-10-22'});assert.equal(worn.data.laundry,'Laundry');assert.equal(worn.data.totalWears,1)});
+test('coat gets multiple wears and cleaning reset',()=>{let coat=garment('Outerwear');coat=wearTransition(coat,{date:'2026-10-22'});assert.equal(coat.data.laundry,'Worn');assert.equal(wearLimit(coat),8);coat=completeGarmentCare(coat,'2026-10-23');assert.equal(coat.data.laundry,'Clean');assert.equal(coat.data.wearsSinceWash,0)});
+test('stains immediately require laundry',()=>{assert.equal(wearTransition(garment('Jeans'),{date:'2026-10-22',condition:'Stained'}).data.laundry,'Laundry')});
+test('care checks support six and twelve month intervals',()=>{const coat=garment('Outerwear',{lastCareCheck:'2026-01-01',careCheckMonths:6});assert.equal(careCheckDue(coat,'2026-07-01'),true);assert.equal(careCheckDue(coat,'2026-06-30'),false)});
