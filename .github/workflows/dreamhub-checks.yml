@@ -1,9 +1,9 @@
 name: DreamHub checks
 on:
   pull_request:
-    branches: [dreamhub-v2]
+    branches: [main, dreamhub-v2]
   push:
-    branches: [feature/adhd-life-command-center, dreamhub-v2]
+    branches: [main, feature/personal-vault-hardening, dreamhub-v2]
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -16,6 +16,9 @@ jobs:
         run: npm ci
       - name: Check JavaScript syntax
         run: |
-          for file in *.mjs; do node --check "$file"; done
+          for file in *.mjs tests/*.mjs api/*.js; do node --check "$file"; done
       - name: Run deterministic tests
         run: node --test tests/*.test.mjs
+      - name: Check for committed environment files
+        run: |
+          if git ls-files | grep -E '(^|/)\\.env($|\\.)'; then echo 'Do not commit environment files'; exit 1; fi
