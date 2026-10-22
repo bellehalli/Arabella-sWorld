@@ -1,14 +1,26 @@
+import {encryptedCareStore} from './encrypted-care-store.mjs';
 import {encryptBackup,decryptBackup} from './vault-crypto.mjs';
 import {careAgenda} from './care-day-integration.mjs';
 import {recommendCare,importRecommendations} from './care-recommendations.mjs';
 import {shoppingQueue} from './care-shopping.mjs';
-import {careStore,addProduct,addRoutine,checklist,setCompletion,validateCare} from './care-workspace.mjs';
+import {addProduct,addRoutine,checklist,setCompletion,validateCare} from './care-workspace.mjs';
 import {initializeCloud,loginGate} from './cloud.mjs';
-const cloud=await initializeCloud();if(cloud.enabled&&!cloud.store){loginGate(document.body,cloud.client);await new Promise(()=>{});}const $=s=>document.querySelector(s),esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),id=()=>crypto.randomUUID(),store=careStore(localStorage);if(cloud.enabled)document.querySelector('#notice').textContent='Private account verified. Care records are still local to this browser; use export for backups.';
-let state;try{state=store.load()}catch(e){$('#notice').textContent='Care data could not be loaded: '+e.message+' (nothing was overwritten)';throw e}
+let cloud;try{cloud=await initializeCloud();}catch(e){document.body.replaceChildren();const main=document.createElement('main');main.className='login-page';const h=document.createElement('h1');h.textContent='Private Vault unavailable';const p=document.createElement('p');p.textContent=e.message;main.append(h,p);document.body.append(main);throw e;}
+if(cloud.enabled&&!cloud.store){loginGate(document.body,cloud.client);await new Promise(()=>{});}
+const $=s=>document.querySelector(s),esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),id=()=>crypto.randomUUID(),store=encryptedCareStore(localStorage);
+let state;
+try{
+ const pass=prompt('Unlock your encrypted care vault. Enter your 16+ character passphrase. For a new vault, create a new one. Keep it safe; there is no recovery.');
+ if(pass===null)throw Error('Vault unlock canceled');
+ try{state=await store.unlock(pass);}catch(e){
+  if(/Confirm migration/.test(e.message)&&confirm('Unencrypted care data exists on this device. Encrypt it with this passphrase and delete its plaintext localStorage copy? Export a backup first if needed.'))state=await store.unlock(pass,{allowMigration:true});
+  else throw e;
+ }
+}catch(e){document.body.replaceChildren();const main=document.createElement('main');main.className='login-page';const h=document.createElement('h1');h.textContent='Care vault remains locked';const p=document.createElement('p');p.textContent=e.message;main.append(h,p);document.body.append(main);throw e;}
+$('#notice').textContent='Care vault unlocked on this device. Changes are encrypted at rest; no cloud synchronization yet.';
 const localDate=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
 $('#date').value=localDate();
-function save(next){try{store.save(next);state=next;$('#notice').textContent='Saved on this device ♡';render()}catch(e){$('#notice').textContent='Could not save: '+e.message}}
+let saving=false;async function save(next){if(saving){$('#notice').textContent='Save in progress; please retry.';return;}saving=true;try{await store.save(next);state=next;$('#notice').textContent='Encrypted and saved on this device ♡';render()}catch(e){$('#notice').textContent='Could not save: '+e.message;}finally{saving=false;}}
 function render(){const date=$('#date').value;$('#products').innerHTML=state.products.map(p=>'<li><strong>'+esc(p.name)+'</strong> · '+esc(p.brand)+' · '+esc(p.status)+'<br><small>'+esc(p.notes)+'</small></li>').join('')||'<li>No products saved yet.</li>';$('#routine-products').innerHTML='<option value="">No product selected</option>'+state.products.map(p=>'<option value="'+esc(p.id)+'">'+esc(p.name)+'</option>').join('');$('#routines').innerHTML=state.routines.map(r=>'<article><h3>'+esc(r.name)+' · '+esc(r.frequency)+'</h3><ol>'+r.steps.map(x=>'<li>'+esc(x.title)+' — '+esc(state.products.find(p=>p.id===x.productId)?.name||'Product not selected')+'</li>').join('')+'</ol><form class="add-step" data-routine="'+esc(r.id)+'"><label>Additional step <input name="step" required></label><label>Product <select name="productId"><option value="">None</option>'+state.products.map(p=>'<option value="'+esc(p.id)+'">'+esc(p.name)+'</option>').join('')+'</select></label><label>Instructions <input name="instructions"></label><button>Add step</button></form></article>').join('');const rows=checklist(state,date);$('#checklist').innerHTML=rows.map(x=>'<label class="step"><input type="checkbox" data-routine="'+esc(x.routineId)+'" data-step="'+esc(x.stepId)+'" '+(x.done?'checked':'')+'><span><strong>'+esc(x.title)+'</strong><br>'+esc(x.routine)+' · '+esc(x.product||'No product selected')+' ('+esc(x.productStatus)+')<br><small>'+esc(x.instructions)+'</small></span></label>').join('')||'<p>No routines due on this date.</p>';renderConcierge();}
 $('#product-form').addEventListener('submit',e=>{e.preventDefault();const f=new FormData(e.target);save(addProduct(state,{id:id(),name:String(f.get('name')).trim(),brand:String(f.get('brand')).trim(),status:f.get('status'),notes:String(f.get('notes')).trim()}));e.target.reset()});
 $('#routine-form').addEventListener('submit',e=>{e.preventDefault();const f=new FormData(e.target);save(addRoutine(state,{id:id(),name:String(f.get('name')).trim(),frequency:f.get('frequency'),weekday:Number(f.get('weekday')),monthday:Number(f.get('monthday')),steps:[{id:id(),title:String(f.get('step')).trim(),productId:f.get('productId')||'',instructions:String(f.get('instructions')).trim()}]}));e.target.reset()});
