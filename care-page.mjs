@@ -2,7 +2,8 @@ import {careAgenda} from './care-day-integration.mjs';
 import {recommendCare,importRecommendations} from './care-recommendations.mjs';
 import {shoppingQueue} from './care-shopping.mjs';
 import {careStore,addProduct,addRoutine,checklist,setCompletion,validateCare} from './care-workspace.mjs';
-const $=s=>document.querySelector(s),esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),id=()=>crypto.randomUUID(),store=careStore(localStorage);
+import {initializeCloud,loginGate} from './cloud.mjs';
+const cloud=await initializeCloud();if(cloud.enabled&&!cloud.store){loginGate(document.body,cloud.client);await new Promise(()=>{});}const $=s=>document.querySelector(s),esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),id=()=>crypto.randomUUID(),store=careStore(localStorage);if(cloud.enabled)document.querySelector('#notice').textContent='Private account verified. Care records are still local to this browser; use export for backups.';
 let state;try{state=store.load()}catch(e){$('#notice').textContent='Care data could not be loaded: '+e.message+' (nothing was overwritten)';throw e}
 const localDate=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
 $('#date').value=localDate();
