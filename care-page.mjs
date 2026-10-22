@@ -1,3 +1,4 @@
+import {encryptBackup,decryptBackup} from './vault-crypto.mjs';
 import {careAgenda} from './care-day-integration.mjs';
 import {recommendCare,importRecommendations} from './care-recommendations.mjs';
 import {shoppingQueue} from './care-shopping.mjs';
@@ -17,6 +18,7 @@ function renderConcierge(){const date=$('#date').value,agenda=careAgenda({care:s
 $('#suggestions').addEventListener('click',e=>{const b=e.target.closest('[data-suggest]');if(!b)return;const next=importRecommendations(state,[{id:id(),title:b.dataset.suggest,area:b.dataset.area,approved:true}]);save(next)});
 
 $('#date').addEventListener('change',render);
-$('#export').addEventListener('click',()=>{const url=URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='dreamhub-care-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)});
-$('#import').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const parsed=JSON.parse(await file.text());validateCare(parsed);if(confirm('Replace your current care workspace with this backup? Export your existing data first.'))save(parsed)}catch(err){$('#notice').textContent='Import rejected: '+err.message}e.target.value=''});
+$('#export').addEventListener('click',async()=>{const pass=prompt('Create a unique backup passphrase (16+ characters). Store it safely: it cannot be recovered.');if(pass===null)return;try{const encrypted=await encryptBackup(state,pass);const url=URL.createObjectURL(new Blob([JSON.stringify(encrypted,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='dreamhub-care-encrypted.backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);$('#notice').textContent='Encrypted backup exported. Keep the passphrase separate.';}catch(e){$('#notice').textContent='Export failed: '+e.message;}});
+$('#import').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const encrypted=JSON.parse(await file.text());if(encrypted.format!=='dreamhub-vault-backup')throw Error('Only encrypted vault backups are accepted');const pass=prompt('Enter your encrypted backup passphrase');if(pass===null)return;const parsed=await decryptBackup(encrypted,pass);validateCare(parsed);if(confirm('Replace current care records with this decrypted backup? Export a backup first.'))save(parsed);}catch(err){$('#notice').textContent='Import rejected: '+err.message;}finally{e.target.value='';}});
+
 render();
