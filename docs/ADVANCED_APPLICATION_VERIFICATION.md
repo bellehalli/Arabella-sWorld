@@ -82,3 +82,15 @@ For EACH route, application, shared service and integration:
 | To populate from complete PDF | Exact testable criterion | Route | Module | Test name/run | Pending | Pending | Pending |
 
 Do not declare any department, Step 1, or the overall site Bible-compliant while mandatory requirements are missing, blocked or untested. Deferred private attachment staging remains BLOCKED, not PASS.
+
+## Beyond-the-Bible capability review (aspirational; NOT a new launch blocker without approval)
+After each requirement-level Bible audit, ask: Is this the strongest safe, maintainable, free-first version of this workflow? Evaluate:
+- Depth: can the user finish the actual real-life outcome end to end, not just store a record?
+- Intelligence: does it surface useful, explainable next actions based on user-controlled information, without pretending to know unknown facts?
+- Interoperability: are links across calendar, money, Academy, Studio, home and memories correct, reversible, permissioned and deduplicated?
+- Resilience: offline behavior, concurrent edits, audit history, migration, backups and recoverability.
+- Privacy and control: sensitive-data minimization, consent, transparent automation, no surprise actions.
+- Accessibility and performance: mobile-first, keyboard/screen-reader, reduced motion, fast under realistic data volumes.
+- Ownership and cost: local/manual alternatives, data portability, $0-extra recurring goal, no unapproved dependencies.
+
+Score each dimension with tested evidence, not an invented composite score. Capture each improvement as PROPOSED / APPROVED / IMPLEMENTED / VERIFIED, with benefit, complexity, risk, cost and prerequisite. Prioritize missing Bible requirements and correctness/security defects over aspirational features. Avoid feature bloat and do not change product scope without owner approval.
