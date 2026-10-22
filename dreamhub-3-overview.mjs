@@ -15,7 +15,7 @@ export function lifeOverview({records=[],date,receivedCents=0,essentialsCents=0,
  const fixed=rs.filter(r=>r.type==='event'&&r.date===date&&/^\d\d:\d\d$/.test(r.data?.time||'')&&/^\d\d:\d\d$/.test(r.data?.endTime||'')).map(r=>({id:r.id,title:r.title,start:r.data.time,end:r.data.endTime}));
  const agenda=planDay({date,start:'10:00',end:'22:00',fixed,tasks});
  const leads=rs.filter(r=>r.type==='lead'||r.type==='client').map(r=>({...r,score:Number(r.data?.score),website:r.data?.url||'',email:r.data?.contact||''}));
- const qualified=leads.filter(r=>Number.isFinite(r.score)&&r.score>=7).map(r=>qualifyLead(r));
+ const qualified=leads.filter(r=>Number.isFinite(r.score)&&r.score>=7&&r.score<=10).map(r=>qualifyLead(r));
  const followups=rs.filter(r=>r.type==='lead'&&r.data?.contactedDate).flatMap(r=>followupDrafts({date:r.data.contactedDate,replied:!!r.data.replied,optedOut:!!r.data.optedOut,bounced:!!r.data.bounced,existing:r.data.sentFollowups||[]}).filter(f=>f.date<=date).map(f=>({...f,leadId:r.id,title:r.title})));
  const experiences=rs.filter(r=>['experience','experiencePlan'].includes(r.type)&&due(r,date));
  const learning=rs.filter(r=>['course','lesson','assignment','exam','study','learning'].includes(r.type));
