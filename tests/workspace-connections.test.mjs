@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {linkedWorkspace,workspaceGraph,workspaceRollup} from '../workspace-connections.mjs';
+const records=[{id:'lead',type:'lead',links:['proposal'],status:'Next',deletedAt:null},{id:'proposal',type:'proposal',links:[],status:'Done',deletedAt:null},{id:'gone',type:'task',links:['lead'],deletedAt:'2026-10-22'}];
+test('resolve bidirectional workspace relationships',()=>{assert.equal(linkedWorkspace(records,'lead').outgoing[0].id,'proposal');assert.equal(linkedWorkspace(records,'proposal').incoming[0].id,'lead');assert.deepEqual(linkedWorkspace(records,'lead').missing,[]);});
+test('graph excludes deleted records and counts valid links',()=>{assert.equal(workspaceGraph(records).nodes,2);assert.equal(workspaceGraph(records).edges,1);assert.equal(workspaceRollup(records,'proposal').completed,1);});
