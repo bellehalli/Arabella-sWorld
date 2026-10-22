@@ -19,4 +19,6 @@ jobs:
           for file in *.mjs tests/*.mjs api/*.js; do node --check "$file"; done
       - name: Run deterministic tests
         run: node --test tests/*.test.mjs
-      - name: Check for committed environment files\n        run: |\n          if git ls-files | grep -E '(^|/)\\.env($|\\.)'; then echo 'Do not commit environment files'; exit 1; fi\n
+      - name: Check for committed environment files
+        run: |
+          if git ls-files | grep -E '(^|/)\\.env($|\\.)'; then echo 'Do not commit environment files'; exit 1; fi
