@@ -4,6 +4,10 @@ export function searchRecords(records,query='',options={}){
  return (Array.isArray(records)?records:[]).filter(r=>{
   if(!r||r.deletedAt)return false;
   if(options.type&&r.type!==options.type)return false;
+  if(options.favorite===true&&!r.favorite)return false;
+  if(options.status&&r.status!==options.status)return false;
+  if(options.from&&(!r.date||r.date<options.from))return false;
+  if(options.to&&(!r.date||r.date>options.to))return false;
   if(options.tag&&!(r.tags||[]).some(t=>String(t).toLocaleLowerCase()===String(options.tag).toLocaleLowerCase()))return false;
   if(!terms.length)return true;
   // Sensitive bodies and structured details are never searchable through this global index.
