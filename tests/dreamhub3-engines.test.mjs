@@ -1,0 +1,15 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {domainRecord,validateLinks,earnings} from '../executive-domain.mjs';
+import {planDay,shiftBlocks} from '../executive-day-director.mjs';
+import {qualifyLead,dedupeLeads,followupDrafts,studioMetrics} from '../studio-operations.mjs';
+import {semester,semesterHours,checkVocabulary,assessmentWeeks,weightedGrade} from '../belle-academy.mjs';
+import {spendingGuardrail,ownerIncomeScenario} from '../wealth-architect.mjs';
+test('domain relationships detect missing links',()=>{const r=domainRecord('shift',{id:'s',title:'Shift',links:['t']});assert.equal(validateLinks([r]).length,1);});
+test('unreceived shift earnings are not cash',()=>{assert.deepEqual(earnings({wages:5000,cashTips:3000,tipout:1000}),{gross:8000,afterTipout:7000,received:false});});
+test('shift travel and prep become fixed commitments',()=>{assert.equal(shiftBlocks({id:'s',start:'16:00',end:'21:00'})[1].start,'15:00');});
+test('day plan protects interview and needs approval',()=>{const p=planDay({date:'2026-10-22',fixed:[{id:'interview',start:'14:00',end:'16:00'}],tasks:[{id:'call',minutes:90}]});assert.ok(p.blocks.every(b=>b.until<=840||b.from>=960));assert.equal(p.requiresApproval,true);});
+test('lead qualification and deduplication',()=>{assert.equal(qualifyLead({id:'a',score:7}).qualified,true);assert.equal(dedupeLeads([{id:'a',website:'https://a.com/'},{id:'b',website:'a.com'}]).duplicates.length,1);});
+test('followups stop after replies',()=>{assert.equal(followupDrafts({date:'2026-10-01',replied:true}).length,0);assert.deepEqual(followupDrafts({date:'2026-10-01'}).map(x=>x.date),['2026-10-08','2026-10-16']);assert.equal(studioMetrics([{qualified:true,collectedCents:300}]).collectedCents,300);});
+test('semester and Spanish allocation',()=>{assert.equal(semesterHours(),12);assert.ok(semester.courses.some(x=>x[0]==='SPA101'));assert.equal(assessmentWeeks().length,4);assert.equal(weightedGrade({exams:80,assignments:80,projects:80,research:80,mastery:80}),80);});
+test('English vocabulary introduced is not mastered',()=>{const words=Array.from({length:20},(_,i)=>({word:'w'+i,level:i<5?'foundational':'advanced'}));assert.equal(checkVocabulary(words).mastered,0);});
+test('protect essentials and separate scenario',()=>{assert.equal(spendingGuardrail({received:1000,essentials:900,debt:200}).discretionaryCents,0);assert.equal(ownerIncomeScenario(50000000,.5).illustrativeRevenueCents,100000000);});
