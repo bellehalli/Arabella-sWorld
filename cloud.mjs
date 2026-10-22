@@ -5,7 +5,19 @@ export class CloudStore extends Store {
  async update(change){if(this.busy)throw Error('One little save is still finishing. Please try again in a moment.');this.busy=true;try{const {data,error}=await this.client.from('dreamhub_state').select('payload,revision').eq('owner_id',this.user.id).maybeSingle();if(error)throw Error('The cloud couldn’t be reached. Your editor draft is still on this device.');const fresh=structuredClone(data?validate(data.payload):blank()),expected=data?.revision||0;change(fresh);fresh.revision=expected+1;validate(fresh);const result=await this.client.rpc('dreamhub_save',{p_expected:expected,p_payload:fresh});if(result.error){if(result.error.message.includes('VERSION_CONFLICT'))throw Error('Another device just saved. Your draft is safe. Reopen and review before retrying.');throw Error('Cloud save failed. Your editor draft is retained. '+result.error.message);}this.state=fresh;return fresh;}finally{this.busy=false;}}
 }
 export async function initializeCloud(){
- const response=await fetch('/api/config',{cache:'no-store'});if(!response.ok)throw Error('Connection settings could not be checked. Reload to try again.');const config=await response.json();if(!config.enabled)return {enabled:false};
+ let response;
+ try{response=await fetch('/api/config',{cache:'no-store',headers:{Accept:'application/json'}});}
+ catch{throw Error('The configuration endpoint could not be reached. Check your connection and try again.');}
+ if(!response.ok){
+  if(response.status===401||response.status===403)throw Error('Vercel access protection is blocking the private configuration endpoint. Check Deployment Protection settings.');
+  if(response.status===503)throw Error('DreamHub cloud configuration is incomplete or invalid. Check the Supabase URL and publishable key in Vercel production settings.');
+  if(response.status===404)throw Error('DreamHub configuration endpoint was not deployed. Check the Vercel project root and API routing.');
+  throw Error('The configuration endpoint returned HTTP '+response.status+'. Check the deployment and its function logs.');
+ }
+ const type=response.headers.get('content-type')||'';
+ if(!type.includes('application/json'))throw Error('The configuration endpoint returned a webpage instead of JSON. Vercel Deployment Protection or routing may be intercepting the request.');
+ let config;try{config=await response.json();}catch{throw Error('The configuration endpoint returned invalid JSON. Check the deployment logs.');}
+if(!config.enabled)return {enabled:false};
  if(!/^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(config.url)||typeof config.publishableKey!=='string'||!config.publishableKey)throw Error('Cloud setup is incomplete.');
  const {createClient}=await import('./vendor/supabase.mjs');const client=createClient(config.url,config.publishableKey,{auth:{flowType:'pkce',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
  const {data:session}=await client.auth.getSession();if(!session.session)return {enabled:true,client};const {data,error}=await client.auth.getUser();if(error||!data.user)return {enabled:true,client};
