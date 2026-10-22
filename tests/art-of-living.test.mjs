@@ -1,0 +1,7 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {worlds,maintenanceDomains,discoverIdeas,experienceProgress,weeklySalon,maintenanceDue,eventVerification} from '../art-of-living.mjs';
+test('all approved worlds and maintenance domains are represented',()=>{assert.equal(worlds.length,12);assert.equal(maintenanceDomains.length,10)});
+test('free discovery excludes paid experiences',()=>{assert.deepEqual(discoverIdeas([{id:1,price:0,mood:'culture'},{id:2,price:30,mood:'culture'}],{freeOnly:true,mood:'culture'}).map(x=>x.id),[1])});
+test('unverified listings cannot be represented as verified events',()=>{assert.equal(eventVerification({date:'2026-11-02'},'2026-10-22'),'unverified')});
+test('life enrichment counts completed visits only once',()=>{const p=experienceProgress([{id:'x',type:'experience',status:'Done',date:'2026-10-20',data:{world:'Culture Club'}}],'2026-10');assert.equal(p.find(x=>x.world==='Culture Club').completed,1)});
+test('weekly salon respects existing commitments',()=>{const r=[{id:'x',type:'experience',status:'Next',date:'2026-11-02',data:{world:'Culture Club'}}];assert.equal(weeklySalon(r,'2026-11-01').roomForDiscovery,2)});
+test('maintenance is due once per cycle',()=>{const rules=[{id:'id',nextDue:'2026-10-20'}];assert.equal(maintenanceDue(rules,[],'2026-10-22').length,1);assert.equal(maintenanceDue(rules,[{ruleId:'id',completedAt:'2026-10-21'}],'2026-10-22').length,0)});
