@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {careAreas,starterCare,careChecklist,validateCareCatalog} from '../personal-care-concierge.mjs';
+test('every care area has a routine',()=>{assert.equal(careAreas.length,7);for(const area of careAreas)assert.ok(careChecklist(area).length>0);});
+test('recommendations are never marked owned or completed',()=>{for(const item of starterCare)for(const [, ,ownership] of item.steps)assert.notEqual(ownership,'owned');for(const area of careAreas)for(const item of careChecklist(area))for(const step of item.steps)assert.equal(step.completed,false);});
+test('daily brushing twice and weekly hair care',()=>{assert.equal(starterCare.filter(x=>x.area==='dental'&&x.frequency==='daily').length,2);assert.equal(starterCare.find(x=>x.id==='hair-weekly').frequency,'weekly');assert.equal(validateCareCatalog(),true);});

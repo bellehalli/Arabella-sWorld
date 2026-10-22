@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {emptyCare,addProduct,addRoutine,setCompletion} from '../care-workspace.mjs';
+import {recommendCare,importRecommendations} from '../care-recommendations.mjs';
+import {shoppingQueue,shoppingTotals} from '../care-shopping.mjs';
+import {careAgenda} from '../care-day-integration.mjs';
+const fixture=()=>addRoutine(addProduct(emptyCare(),{id:'p',name:'Fluoride toothpaste',status:'need'}),{id:'r',name:'Brush AM',frequency:'daily',steps:[{id:'s',title:'Brush teeth',productId:'p'}]});
+test('recommendations are never purchased or priced without verification',()=>{const x=recommendCare({area:'dental'});assert.ok(x.length>0);assert.ok(x.every(r=>!r.purchaseApproved&&r.affordable==='price not verified'));});
+test('only approved recommendations enter the library',()=>{const s=importRecommendations(emptyCare(),[{id:'a',area:'dental',title:'Fluoride toothpaste',approved:false},{id:'b',area:'dental',title:'Soft-bristled toothbrush',approved:true}]);assert.equal(s.products.length,1);assert.equal(s.products[0].status,'considering');});
+test('shopping queue never charges or invents prices',()=>{const s=fixture();const q=shoppingQueue({...s,budgetCents:0});assert.equal(q.length,1);assert.equal(q[0].approved,false);assert.equal(q[0].canBudget,null);assert.equal(shoppingTotals(q).unpricedCount,1);});
+test('care agenda respects fixed blocks and tracks completion',()=>{let s=fixture();const a=careAgenda({care:s,date:'2026-10-22',fixed:[{id:'shift',start:'11:00',end:'17:00'}]});assert.equal(a.careRemaining,1);assert.equal(a.requiresApproval,true);assert.ok(a.blocks.every(b=>b.until<=660||b.from>=1020));s=setCompletion(s,{routineId:'r',stepId:'s',date:'2026-10-22',done:true});assert.equal(careAgenda({care:s,date:'2026-10-22'}).careRemaining,0);});

@@ -1,0 +1,6 @@
+// Drafts and recommendations only: no automatic outreach.
+export const pipeline=['sourced','verified','qualified','ready','contacted','replied','discovery','proposal','negotiation','won','lost','nurture'];
+export function qualifyLead(lead,threshold=7){if(!lead?.id||!Number.isFinite(lead.score)||lead.score<0||lead.score>10)throw Error('Invalid lead');return {...lead,qualified:lead.score>=threshold};}
+export function dedupeLeads(leads){const seen=new Set(),unique=[],duplicates=[];for(const lead of leads){const key=(lead.website||lead.email||lead.id||'').trim().toLowerCase().replace(/^https?:\/\//,'').replace(/\/$/,'');if(!key)throw Error('Missing lead identity');(seen.has(key)?duplicates:unique).push(lead);seen.add(key);}return {unique,duplicates};}
+export function followupDrafts({date,replied=false,optedOut=false,bounced=false,existing=[]}){if(!/^\d{4}-\d{2}-\d{2}$/.test(date||''))throw Error('Invalid date');if(replied||optedOut||bounced)return [];return [7,15].filter(d=>!existing.includes(d)).map(days=>{const x=new Date(date+'T12:00:00Z');x.setUTCDate(x.getUTCDate()+days);return {day:days,date:x.toISOString().slice(0,10),sendApproved:false};});}
+export function studioMetrics(leads){return {qualified:leads.filter(x=>x.qualified).length,proposals:leads.filter(x=>x.stage==='proposal').length,collectedCents:leads.reduce((s,x)=>s+(x.collectedCents||0),0)};}
