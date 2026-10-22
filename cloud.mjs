@@ -11,4 +11,19 @@ export async function initializeCloud(){
  const {data:session}=await client.auth.getSession();if(!session.session)return {enabled:true,client};const {data,error}=await client.auth.getUser();if(error||!data.user)return {enabled:true,client};
  const {data:membership,error:memberError}=await client.from('dreamhub_owners').select('owner_id').eq('owner_id',data.user.id).maybeSingle();if(memberError||!membership)throw Error('This account has not been invited to this private Dreamhub. Sign out or ask the owner to check setup.');const store=new CloudStore(client,data.user,blank());await store.refresh();return {enabled:true,client,user:data.user,store};
 }
-export function loginGate(root,client){root.innerHTML=`<main class="login-page"><span class="login-heart">♡</span><p class="eyebrow">ARABELLA’S PRIVATE LITTLE UNIVERSE</p><h1>Welcome <em>home.</em></h1><p>A little space that belongs to you.</p><form id="auth-form"><label>Email<input name="email" type="email" autocomplete="email" required></label><label id="code-label" hidden>Email code<input name="code" type="text" autocomplete="one-time-code" inputmode="numeric"></label><button class="heart-pill">Send my sign-in code ♡</button><p id="auth-status" role="status"></p></form></main>`;let email=null;document.querySelector('#auth-form').addEventListener('submit',async event=>{event.preventDefault();const form=event.target,button=form.querySelector('button'),status=document.querySelector('#auth-status');button.disabled=true;try{const data=new FormData(form);if(!email){const value=String(data.get('email'));const result=await client.auth.signInWithOtp({email:value,options:{shouldCreateUser:false}});if(result.error)throw result.error;email=value;document.querySelector('#code-label').hidden=false;form.elements.email.readOnly=true;button.textContent='Open my universe ♡';status.textContent='If this is an invited account, a code is on its way. Check your email.';}else{const result=await client.auth.verifyOtp({email,token:String(data.get('code')),type:'email'});if(result.error)throw result.error;location.reload();}}catch(error){status.textContent=error.message;}finally{button.disabled=false;}});}
+export function loginGate(root,client){
+ root.innerHTML=`<main class="login-page"><span class="login-heart">♡</span><p class="eyebrow">ARABELLA’S PRIVATE LITTLE UNIVERSE</p><h1>Welcome <em>home.</em></h1><p>A little space that belongs to you.</p><form id="auth-form"><label>Email<input name="email" type="email" autocomplete="email" required></label><button class="heart-pill">Email my private sign-in link ♡</button><p id="auth-status" role="status"></p></form></main>`;
+ root.querySelector('#auth-form').addEventListener('submit',async event=>{
+  event.preventDefault();
+  const form=event.currentTarget,button=form.querySelector('button'),status=form.querySelector('#auth-status');
+  button.disabled=true;
+  try{
+   const email=String(new FormData(form).get('email')||'').trim();
+   const redirect=new URL(window.location.pathname,window.location.origin).toString();
+   const {error}=await client.auth.signInWithOtp({email,options:{shouldCreateUser:false,emailRedirectTo:redirect}});
+   if(error)throw error;
+   status.textContent='If this is your invited account, check your inbox for a private sign-in link. Open it on this device.';
+  }catch(error){status.textContent='We could not send the sign-in email. Please try again later.';}
+  finally{button.disabled=false;}
+ });
+}
