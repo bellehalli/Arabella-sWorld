@@ -1,5 +1,4 @@
 import {connectedWorkspace} from './cohesive-workspaces.mjs';
-import {worlds} from './art-of-living.mjs';
 import {recurringProposals} from './recurring-concierge.mjs';
 import {lifeOverview,conciergeSuggestions} from './dreamhub-3-overview.mjs';
 import {wearTransition,completeGarmentCare,wardrobeWearSummary} from './wardrobe-cycle.mjs';
