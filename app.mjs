@@ -162,7 +162,16 @@ async function showAttachments(recordId){
    catch(err){status.textContent=err.message;input.disabled=false;}
   };
   dialog.querySelectorAll('[data-vault-download]').forEach(b=>b.onclick=async()=>{
-   const status=dialog.querySelector('#vault-status');try{const file=await downloadAttachment(cloud.client,cloud.user.id,recordId,b.dataset.vaultDownload);const url=URL.createObjectURL(file.blob);const a=document.createElement('a');a.href=url;a.download=file.name;a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);}catch(err){status.textContent=err.message;}
+   const status=dialog.querySelector('#vault-status');try{const file=await downloadAttachment(cloud.client,cloud.user.id,recordId,b.dataset.vaultDownload);const url=URL.createObjectURL(file.blob);if(file.mime.startsWith('image/')||file.mime==='application/pdf'){
+    const preview=document.createElement('dialog');preview.className='editor-dialog';
+    const content=document.createElement(file.mime==='application/pdf'?'iframe':'img');
+    content.src=url;content.setAttribute('aria-label',file.name);content.style.maxWidth='100%';content.style.width='min(85vw,850px)';content.style.height='min(75vh,750px)';
+    const close=document.createElement('button');close.type='button';close.textContent='Close preview';close.onclick=()=>preview.close();
+    const save=document.createElement('a');save.href=url;save.download=file.name;save.textContent='Download file';
+    preview.append(content,save,close);document.body.append(preview);
+    preview.addEventListener('close',()=>{preview.remove();URL.revokeObjectURL(url);});
+    preview.showModal();
+   }else{const a=document.createElement('a');a.href=url;a.download=file.name;a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);}}catch(err){status.textContent=err.message;}
   });
   dialog.querySelectorAll('[data-vault-delete]').forEach(b=>b.onclick=async()=>{
    if(!confirm('Permanently delete this attachment? This cannot be undone.'))return;
