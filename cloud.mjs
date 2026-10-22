@@ -14,8 +14,8 @@ export async function initializeCloud(){
   if(response.status===404)throw Error('DreamHub configuration endpoint was not deployed. Check the Vercel project root and API routing.');
   throw Error('The configuration endpoint returned HTTP '+response.status+'. Check the deployment and its function logs.');
  }
- const type=response.headers.get('content-type')||'';
- if(!type.includes('application/json'))throw Error('The configuration endpoint returned a webpage instead of JSON. Vercel Deployment Protection or routing may be intercepting the request.');
+ const type=response.headers?.get?.('content-type')||'';
+ if(type&&!type.includes('application/json'))throw Error('The configuration endpoint returned a webpage instead of JSON. Vercel Deployment Protection or routing may be intercepting the request.');
  let config;try{config=await response.json();}catch{throw Error('The configuration endpoint returned invalid JSON. Check the deployment logs.');}
 if(!config.enabled)return {enabled:false};
  if(!/^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(config.url)||typeof config.publishableKey!=='string'||!config.publishableKey)throw Error('Cloud setup is incomplete.');
