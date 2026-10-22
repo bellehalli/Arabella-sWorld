@@ -1,0 +1,6 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {previewAppleCalendar,appleImportReview,calendarExport,appleCapabilities} from '../apple-bridge.mjs';
+const ics='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nBEGIN:VEVENT\r\nUID:abc123\r\nDTSTART;VALUE=DATE:20261101\r\nSUMMARY:Visit the museum\r\nEND:VEVENT\r\nEND:VCALENDAR';
+test('preview calendar events without writing personal data',()=>{const rows=previewAppleCalendar(ics);assert.equal(rows.length,1);assert.equal(rows[0].title,'Visit the museum');assert.equal(rows[0].date,'2026-11-01');assert.equal(rows[0].approved,false);});
+test('review deduplicates existing external identifiers',()=>{const incoming=previewAppleCalendar(ics);assert.equal(appleImportReview([{deletedAt:null,data:{appleExternalId:'abc123'}}],incoming).length,0);assert.equal(appleImportReview([],incoming).length,1);});
+test('export calendar without unsafe raw newlines',()=>{const output=calendarExport([{id:'x',title:'One\nTwo',body:'Hi',date:'2026-11-01',type:'event'}]);assert.match(output,/SUMMARY:One\\nTwo/);assert.match(output,/DTSTART;VALUE=DATE:20261101/);});
+test('Apple capabilities never claim automatic access to Health or Notes',()=>{assert.match(appleCapabilities.health,/Native HealthKit/);assert.match(appleCapabilities.notes,/no blanket Notes API/);});
