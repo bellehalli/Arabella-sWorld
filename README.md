@@ -13,6 +13,7 @@ A blush/lavender personal life workspace with heart controls, illustrated readin
 - Career and studio pipelines, gross compensation calculator, learning, home, beauty, wardrobe, people, pet care, travel, memories, wishes, reviews, seasons and decisions.
 - Manually enabled/run application-follow-up recipe with preview, per-record deduplication and run history. No outward actions.
 - Draft recovery, same-record conflict detection, save failure retention, trash/undo, JSON merge import, CSV/Markdown/ICS exports.
+- Encrypted full-workspace backup export and explicit whole-workspace restore; ordinary JSON export remains available for readable portability.
 - Compressed optional photo cards in selected modules; all records remain browser-local until cloud is configured.
 
 ## Run and test
@@ -29,7 +30,7 @@ Device-only state: `arabella-dreamhub-v2` in localStorage. Drafts: `dreamhub-dra
 
 Trash is retained until manually purged. Deleted or old snapshots may also exist in exported backups. Writing history is bounded to ten prior versions. Photos consume localStorage capacity; a failed storage write leaves the editor and draft available, never claims a committed save.
 
-A concealed search preview is not a device lock or encryption. Data is not end-to-end encrypted. No bank feed, analytics provider, AI API, outbound messages, purchases or financial transactions are connected.
+A concealed search preview is not a device lock or encryption. Main workspace records are still plaintext in localStorage and are not end-to-end encrypted. Encrypted backup files use a separate passphrase that cannot be recovered; full restore replaces the current workspace only after an explicit confirmation. No bank feed, analytics provider, AI API, outbound messages, purchases or financial transactions are connected.
 
 ## Managed auth / cloud activation (coded, NOT provisioned or live-tested)
 

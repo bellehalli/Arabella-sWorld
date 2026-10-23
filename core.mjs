@@ -16,6 +16,7 @@ export class Store{
  async trash(id){return this.update(s=>{const r=s.records.find(x=>x.id===id);if(!r)throw Error('Entry not found.');r.deletedAt=now();r.version++;r.updatedAt=now();});}
  async restore(id){return this.update(s=>{const r=s.records.find(x=>x.id===id);r.deletedAt=null;r.version++;r.updatedAt=now();});}
  async import(s,mode='merge'){validate(s);return this.update(current=>{if(mode==='replace')throw Error('Replacement is disabled. Merge or restore records explicitly.');const conflicts=[];for(const r of s.records){const old=current.records.find(x=>x.id===r.id);if(!old)current.records.push(r);else if(JSON.stringify(old)!==JSON.stringify(r))conflicts.push(r.id);}if(conflicts.length)throw Error(`${conflicts.length} conflicting records. Import stopped; nothing was replaced.`);});}
+ async restoreBackup(s){validate(structuredClone(s));return this.update(current=>{const revision=current.revision;for(const key of Object.keys(current))delete current[key];Object.assign(current,structuredClone(s),{revision});});}
 }
 export const active=s=>s.records.filter(r=>!r.deletedAt);
 export function totals(records,month,scope='Personal'){const list=records.filter(r=>r.type==='transaction'&&!r.deletedAt&&r.date.startsWith(month)&&r.data.scope===scope);return list.reduce((a,r)=>{a[r.data.direction==='Income'?'income':'expense']+=r.data.amount;return a;},{income:0,expense:0});}

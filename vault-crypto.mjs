@@ -2,7 +2,7 @@
 // PBKDF2-SHA256 with 600k iterations; unique random salt and IV for each backup.
 // This does not encrypt localStorage; use only for offline backup exports.
 const encoder=new TextEncoder(),decoder=new TextDecoder();
-const b64=bytes=>btoa(String.fromCharCode(...bytes));
+function b64(bytes){let binary='';for(let i=0;i<bytes.length;i+=0x8000)binary+=String.fromCharCode(...bytes.subarray(i,i+0x8000));return btoa(binary);}
 const un64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 async function key(pass,salt){if(typeof pass!=='string'||pass.length<16)throw Error('Use a backup passphrase of at least 16 characters');const material=await crypto.subtle.importKey('raw',encoder.encode(pass),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:600000,hash:'SHA-256'},material,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);}
 export async function encryptBackup(data,passphrase){const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));const ciphertext=await crypto.subtle.encrypt({name:'AES-GCM',iv},await key(passphrase,salt),encoder.encode(JSON.stringify(data)));return {format:'dreamhub-vault-backup',version:1,kdf:'PBKDF2-SHA256',iterations:600000,cipher:'AES-256-GCM',salt:b64(salt),iv:b64(iv),ciphertext:b64(new Uint8Array(ciphertext))};}
