@@ -5,8 +5,9 @@ import {record,blank,validate} from '../core.mjs';
 const make=(type,opts={})=>record(type,opts);
 
 test('life timeline filters dates and categories, hides private entries unless requested, and never previews private text',()=>{
- const rows=[make('memory',{id:'m1',title:'A quiet day',body:'public detail',date:'2026-04-02'}),make('journal',{id:'j1',title:'Private title',body:'private words',date:'2026-04-01',sensitive:true}),make('event',{id:'e1',title:'Later',date:'2026-05-01'})];
+ const rows=[make('memory',{id:'m1',title:'A quiet day',body:'public detail',date:'2026-04-02',tags:['garden']}),make('journal',{id:'j1',title:'Private title',body:'private words',date:'2026-04-01',sensitive:true}),make('event',{id:'e1',title:'Later',date:'2026-05-01'})];
  assert.deepEqual(lifeTimeline(rows,{from:'2026-04-01',to:'2026-04-30'}).map(x=>x.id),['m1']);assert.deepEqual(lifeTimeline(rows,{category:'Memories'}).map(x=>x.id),['m1']);
+ assert.deepEqual(lifeTimeline(rows,{query:'garden'}).map(x=>x.id),['m1']);assert.deepEqual(lifeTimeline(rows,{query:'public detail'}).map(x=>x.id),['m1']);assert.deepEqual(lifeTimeline(rows,{query:'private words',includeSensitive:true}).map(x=>x.id),[]);assert.deepEqual(lifeTimeline(rows,{query:'private title',includeSensitive:true}).map(x=>x.id),['j1']);
  const privateRow=lifeTimeline(rows,{includeSensitive:true}).find(x=>x.id==='j1');assert.equal(privateRow.title,'Private title');assert.equal(privateRow.body,'');
 });
 
