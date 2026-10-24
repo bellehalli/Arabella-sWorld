@@ -26,11 +26,12 @@ Scope: read-only comparison of the repository's default `main` source and projec
 ## In-app feature increment — October 24, 2026
 
 - Added an editable, 16-week Belle Academy semester generator. Course load is 12 hours/week across CS201, BUS201, FND101, SPA101, and RES101; assignments and checkpoint exams count inside each course's weekly time budget. Generation is idempotent by semester start date and does not create calendar events.
+- Added a weekly study planner that spreads outstanding course work across chosen days, checks timed events and shifts, respects daily focus caps and between-block buffers, reports work that cannot fit, and only writes planner events after explicit approval. It does not write to Google Calendar.
 - Added per-course diagnostics, learning-evidence capture with an 80% mastery rule, graded assignment/exam evidence, and a transcript view that labels incomplete grade coverage as provisional instead of filling missing categories with invented marks.
 - Added a research notebook requiring source title and URL, preserving access date, method, limits, and learner synthesis. The UI does not claim novelty or faculty review.
 - Added a 5-foundational/15-advanced vocabulary intake and spaced recall with due dates and recall confidence. New words begin unmastered.
 - Added deterministic engine and simulated-UI coverage for term generation, weekly effort accounting, diagnostics, mastery, research provenance, recall progression, and grade coverage.
-- Current local validation after this increment: see the latest branch test run before publishing; live browser, database, device, and staging acceptance remain deferred.
+- Current local validation after this increment: `npm test` 119/119; syntax checks and `git diff --check` pass; production dependency audit reports 0 vulnerabilities. Live browser, database, device, and staging acceptance remain deferred.
 
 ## Gates still requiring an isolated environment or further security review
 
