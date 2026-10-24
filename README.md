@@ -7,9 +7,9 @@ A blush/lavender personal life workspace with heart controls, illustrated readin
 - 45 navigable spaces and 48 typed record forms, common IDs, labels, favorites, links/backlinks, ten previous edit snapshots.
 - Journals, diary, mixed moods/intensities/custom feelings, dreams, grimoire rituals and readings.
 - Original 78-card tarot reference, random reflective three-card spreads, saved reading drafts.
-- Today’s Three pinned tasks, Now/Next/Later/Done board, projects, calendar with agenda and ICS export.
-- Persistent focus timer, completion history, distraction inbox, daily/weekly/ongoing trackers with retained logs.
-- Exact-cent financial records, separate Personal/Studio labels, month-specific budget limits, savings, bills, debt what-if.
+- Task workflows include linked subtasks and prerequisites, next actions, blockers, contexts and locations, plus fixed, before, flexible-window and someday due dates. Completing a task waits for its prerequisites.
+- Day/week/month calendar planning with saved timezone, daylight-saving gap/fold choices, overlap review, manual ICS preview/import and timezone-correct ICS export. Recurrence rules can be paused, skipped once, and approved per occurrence.
+- Focus sessions link to ready tasks, offer break flow, a local opt-in sound, distraction parking and bounded session history. Habit templates have weekly targets, retained logs and pause/resume controls. Weekly reset and minimum-viable-day views surface capacity warnings without silently moving work.
 - Career and studio pipelines, gross compensation calculator, learning, home, beauty, wardrobe, people, pet care, travel, memories, wishes, reviews, seasons and decisions.
 - Manually enabled/run application-follow-up recipe with preview, per-record deduplication and run history. No outward actions.
 - Draft recovery, same-record conflict detection, save failure retention, trash/undo, JSON merge import, CSV/Markdown/ICS exports.
@@ -17,7 +17,7 @@ A blush/lavender personal life workspace with heart controls, illustrated readin
 - Ten Bible §5 advanced systems, searchable Life Timeline, structured personal spending guardrails, and a local approval-based automation atelier.
 - Universal Heart capture routes to a sortable inbox with bulk labels, snooze/undo, and linked conversions. Global search supports saved text/type/date/label filters, module scopes, recent places, and private text exclusion by default.
 - Continuity tools include user-owned collections, reusable record templates, validated custom fields, a browsable relationship graph, duplicate review, guided private writing, and dated Future Self letter reveals.
-- Task cards support linked tiny steps, next physical actions, blocker notes, and context labels.
+- Goal hierarchy, qualitative progress, linked milestones and an explicit preview/approval flow for converting a dream into linked tasks.
 - Money scenarios compare user-entered monthly assumptions and one-time move costs with exact-cent calculations; estimates are saved explicitly.
 - Compressed optional photo cards in selected modules; all records remain browser-local until cloud is configured.
 
@@ -33,7 +33,7 @@ The application itself is browser-native ES modules. The pinned Supabase client 
 
 ## Storage and privacy
 
-Device-only state: `arabella-dreamhub-v2` in localStorage. Drafts: `dreamhub-draft:local:<record or type>` or account-scoped draft keys in cloud mode. The old `belle-dreamhub-v1` key is never changed. Export format is versioned JSON `{format, exportedAt, state}`. Import validates first, previews counts and merges new IDs; conflicting IDs stop the entire import. Legacy v1 migration preserves raw source fields and ledger provenance. It does not invent missing dates or habit history. Local multi-tab writes use Web Locks when supported; fallback is best effort and should not be treated as a distributed database lock.
+Device-only state: `arabella-dreamhub-v2` in localStorage. Drafts: `dreamhub-draft:local:<record or type>` or account-scoped draft keys in cloud mode. The old `belle-dreamhub-v1` key is never changed. Export format is versioned JSON `{format, exportedAt, state}`. Import validates first, previews additions, identical IDs and conflicts; approved imports add only new records, preserve current conflicts and record provenance. Legacy v1 migration preserves raw source fields and ledger provenance. It does not invent missing dates or habit history. Local multi-tab writes use Web Locks when supported; fallback is best effort and should not be treated as a distributed database lock.
 
 Trash is retained until manually purged. Deleted or old snapshots may also exist in exported backups. Writing history is bounded to ten prior versions. Photos consume localStorage capacity; a failed storage write leaves the editor and draft available, never claims a committed save.
 
@@ -51,7 +51,7 @@ A concealed search preview is not a device lock or encryption. Main workspace re
 
 ## Still outside this milestone
 
-Live cloud provisioning/owner setup and real cross-device tests; Vercel Git integration; live browser visual/accessibility testing; fully normalized cloud schema; full offline service worker; attachments vault; advanced recurrence; drag/resize dashboards; rich-text editor; full custom workflow builder; notification infrastructure; CSV/ICS imports; bank integrations; sophisticated wardrobe/room canvases; full v5 automation engine.
+Live cloud provisioning/owner setup and real cross-device tests; Vercel Git integration; live browser visual/accessibility testing; fully normalized cloud schema; full offline service worker; attachments vault; drag/resize calendar blocks and external calendar synchronization; rich-text editor; full custom workflow builder; notification infrastructure; finance and statement reconciliation; remaining career, studio, home/admin, wellness, relationship, library and dream-estate journeys; bank integrations; sophisticated wardrobe/room canvases; full v5 automation engine.
 
 No database, hosting plan, external account, billing setting, or production deployment is changed automatically by this source.
 
@@ -59,4 +59,4 @@ No database, hosting plan, external account, billing setting, or production depl
 
 Repository: https://github.com/bellehalli/Arabella-sWorld
 
-The expanded build is on the `dreamhub-v2` review branch. The existing production site remains separate until release review.
+Step 1 Capture & Continuity is merged to `main`. Step 2 Planning is in progress on a feature branch and is not a production release.
