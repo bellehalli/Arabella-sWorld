@@ -4,7 +4,7 @@ A blush/lavender personal life workspace with heart controls, illustrated readin
 
 ## Working in this build
 
-- 32 navigable spaces, 32 typed record forms, common IDs, labels, favorites, links/backlinks, ten previous edit snapshots.
+- 45 navigable spaces and 48 typed record forms, common IDs, labels, favorites, links/backlinks, ten previous edit snapshots.
 - Journals, diary, mixed moods/intensities/custom feelings, dreams, grimoire rituals and readings.
 - Original 78-card tarot reference, random reflective three-card spreads, saved reading drafts.
 - Today’s Three pinned tasks, Now/Next/Later/Done board, projects, calendar with agenda and ICS export.
@@ -14,7 +14,14 @@ A blush/lavender personal life workspace with heart controls, illustrated readin
 - Manually enabled/run application-follow-up recipe with preview, per-record deduplication and run history. No outward actions.
 - Draft recovery, same-record conflict detection, save failure retention, trash/undo, JSON merge import, CSV/Markdown/ICS exports.
 - Encrypted full-workspace backup export and explicit whole-workspace restore; ordinary JSON export remains available for readable portability.
+- Ten Bible §5 advanced systems, searchable Life Timeline, structured personal spending guardrails, and a local approval-based automation atelier.
+- Universal Heart capture routes to a sortable inbox with bulk labels, snooze/undo, and linked conversions. Global search supports saved text/type/date/label filters, module scopes, recent places, and private text exclusion by default.
+- Continuity tools include user-owned collections, reusable record templates, validated custom fields, a browsable relationship graph, duplicate review, guided private writing, and dated Future Self letter reveals.
+- Task cards support linked tiny steps, next physical actions, blocker notes, and context labels.
+- Money scenarios compare user-entered monthly assumptions and one-time move costs with exact-cent calculations; estimates are saved explicitly.
 - Compressed optional photo cards in selected modules; all records remain browser-local until cloud is configured.
+
+These are implemented local workflows at different levels of depth. The broader Master Bible vision is not yet complete; the staged feature, security, visual/accessibility, and automation sequence is tracked in `docs/IMPLEMENTATION_SEQUENCE_MASTER_BIBLE_V5.md`.
 
 ## Run and test
 
