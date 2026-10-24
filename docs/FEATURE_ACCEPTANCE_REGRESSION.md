@@ -42,6 +42,13 @@ Run the automated checks with `npm test`. The UI suite also renders all routes w
 3. Add inventory with a warranty date, a recurring maintenance item, and a document checklist. Mark a due review complete and verify recurring maintenance advances to the next valid date, including month-end clamping.
 4. Toggle checklist items, edit the checklist, trash it, restore it, and include it in a full export.
 
+### Day Director
+
+1. Add a confirmed shift with start/end, commute, preparation, and recovery time; add a tentative shift, timed appointment, caregiving event, all-day event, due task, and dependency-blocked task.
+2. Preview a day with a chosen awake window, energy, focus-minute cap, and rest protection. Confirm tentative shifts do not block time, confirmed commitments and travel do, due tasks rank ahead appropriately, blocked tasks are called out, and impossible work remains unscheduled.
+3. Move a proposed block into a conflict and confirm approval is blocked with a clear explanation. Adjust it or uncheck it; approve the valid plan and verify only private linked calendar blocks and an audit record are added. Original shift/event times and task due dates must not change.
+4. Approve a revised plan. Confirm earlier generated blocks move to Trash and can be restored. Simulate a failed save and confirm no plan is reported as saved.
+
 ### Career preparation and offer review
 
 1. Save a resume/portfolio version, career contact, and source. Confirm private records remain private after editing and survive export/restore.

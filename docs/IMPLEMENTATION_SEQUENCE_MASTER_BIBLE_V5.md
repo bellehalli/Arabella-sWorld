@@ -34,6 +34,7 @@ Build against the Bible's route and journey contracts. Complete existing modules
 - [x] Recurrence with explicit daily/weekly/monthly rule semantics, pause/skip/resume, bounded deduplication, timezone handling, and DST tests.
 - [x] Routine and habit templates, weekly targets, pause controls, retained neutral history, and unique weekly progress counts.
 - [x] Weekly reset, minimum-viable-day and capacity/overwhelm views, time-budget warnings, and user-selected task priorities.
+- [x] Day Director: preview a realistic day from confirmed shifts, appointments, caregiving, commute/prep/recovery buffers, task deadlines/dependencies, energy and a focus cap; review conflicts/deferred work; adjust or omit blocks; save only after explicit approval. Existing commitments and due dates stay fixed; superseded generated blocks remain recoverable.
 - [x] Focus workflow: ready-task linking, timer controls, break flow, optional local sound, parking lot, and bounded session history.
 - [x] Goal hierarchy, milestones, linked tasks/projects, qualitative progress, and previewed, user-approved dream-to-plan conversion.
 
