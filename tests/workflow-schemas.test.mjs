@@ -23,8 +23,8 @@ test('workflow migrations are additive and idempotent across store load and save
 
 test('versioned workflow validation rejects impossible payroll amounts and invalid lead stages',()=>{
  assert.throws(()=>validateWorkflowRecord({type:'earnings',data:{workflowVersion:1,wagesCents:-1,cashTipsCents:null,cardTipsCents:null,tipOutCents:null,withheldCents:null,netPaidCents:null}}),/nonnegative whole cents/i);
- assert.throws(()=>validateWorkflowRecord({type:'lead',data:{workflowVersion:1,pipelineStage:'sent-money',contactVerified:false,suppressContact:false}}),/invalid pipeline stage/i);
- assert.throws(()=>validateWorkflowRecord({type:'studioOutreach',data:{workflowVersion:1,sendApproved:true,optedOut:false,bounced:false}}),/unsent/i);
+ assert.throws(()=>validateWorkflowRecord({type:'lead',sensitive:true,data:{workflowVersion:2,pipelineStage:'sent-money',salesStatus:'New',contactVerified:false,suppressContact:false,phoneVerified:false,emailVerified:false,contactName:'',phone:'',email:'',phoneSourceUrl:'',emailSourceUrl:'',contactSourceUrl:'',opportunityCents:0,contractValueCents:0}}),/invalid pipeline stage/i);
+ assert.throws(()=>validateWorkflowRecord({type:'studioOutreach',sensitive:true,data:{workflowVersion:2,sendApproved:true,optedOut:false,bounced:false,channel:'Phone',outcome:'No answer',answered:false,decisionMakerReached:false,qualifiedConversation:false,interested:false}}),/unsent/i);
 });
 
 

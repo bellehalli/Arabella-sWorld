@@ -21,7 +21,7 @@ export function scheduleDay(records,date,{start='10:00',end='19:00',energy='Medi
  try{new Intl.DateTimeFormat('en',{timeZone:timezone}).format(new Date());}catch{throw Error('Choose a valid planning timezone.');}
  const from=toMinutes(start),until=toMinutes(end);if(from===null||until===null||until<=from||until-from>960)throw Error('Choose a daytime window up to 16 hours.');
  const gap=Math.max(0,Math.min(60,Number(buffer)||0)),defaultTravel=Math.max(0,Math.min(240,Number(travel)||0)),capacity=Math.max(0,Math.min(720,Math.floor(Number(capacityMinutes)||0)));
- const dayRecords=records.filter(r=>!r.deletedAt&&r.date>=shiftDate(date,-1)&&r.date<=shiftDate(date,1)&&r.status!=='Done'),oldBlocks=dayRecords.filter(r=>r.type==='event'&&r.date===date&&r.tags?.includes('Day Architect'));
+ const dayRecords=records.filter(r=>!r.deletedAt&&!['paused','skipped'].includes(r.data?.scheduleState)&&r.date>=shiftDate(date,-1)&&r.date<=shiftDate(date,1)&&r.status!=='Done'),oldBlocks=dayRecords.filter(r=>r.type==='event'&&r.date===date&&r.tags?.includes('Day Architect'));
  const commitments=[],unconfirmedShifts=[],timeIssues=[];
  for(const r of dayRecords){
   if(r.type==='shift'){
@@ -51,7 +51,7 @@ export function scheduleDay(records,date,{start='10:00',end='19:00',energy='Medi
  let restBreakUnplaced=false;if(protectRest&&until-from>=300&&from<900&&until>660){const candidates=Array.from({length:17},(_,i)=>660+i*15).filter(x=>x>=from&&x+30<=until).sort((a,b)=>Math.abs(a-750)-Math.abs(b-750));const slot=candidates.find(start=>!fixed.some(x=>intersects({start,end:start+30},x)));if(slot===undefined)restBreakUnplaced=true;else fixed.push({id:'protected-lunch',title:'Meal & rest break',start:slot,end:slot+30,kind:'protected rest'});}
  const inWindow=fixed.filter(x=>x.start<until&&x.end>from),conflicts=validateDayPlan([],inWindow);
  const blocked=[],tasks=[];
- for(const task of records.filter(x=>!x.deletedAt&&x.type==='task'&&!['Done','Paused'].includes(x.status))){
+ for(const task of records.filter(x=>!x.deletedAt&&!['paused','skipped'].includes(x.data?.scheduleState)&&x.type==='task'&&!['Done','Paused'].includes(x.status))){
   let due;try{due=taskDueWindow(task);}catch{continue;}
   const eligible=due.mode==='on'?due.end<=date:due.mode==='before'?due.end>=date:due.mode==='window'?due.start<=date:due.mode==='someday'&&(task.status==='Now'||task.favorite);
   if(!eligible)continue;

@@ -101,3 +101,16 @@ Run the automated checks with `npm test`. The UI suite also renders all routes w
 10. Give Day Director a day with a healthcare appointment plus travel/prep/recovery buffers, a shift, meal prep, shopping, a renewal, and a pet restock. Confirm the preview shows conflicts/deferred work and does not overrun capacity.
 11. In Recovery Room, mark an overdue linked admin item handled elsewhere, verify its linked task is completed too, then undo and verify both original statuses return. Confirm overdue items disappear after completion and are not shown twice.
 12. Add a failed automation record with a sensitive title. Confirm Recovery Room shows a generic failure row and error text without exposing the title, and links to Approval Inbox for retry. Simulate a failed status save and verify no completion or undo is falsely reported.
+
+
+### Studio Sales & Acquisition Operating System
+
+1. Open A. Halliwell Studio on or before Monday October 26, 2026. Confirm exactly one saved recurring rule starts that Monday in `America/Detroit`; the first three entries are 9:00 AM–5:00 PM calls, Thursday is acquisition, Sunday is acquisition/preparation, and Friday/Saturday remain flexible. Refresh twice and confirm no generated occurrence duplicates; verify the cadence across a month/year boundary.
+2. Add a score-6 lead with a verified public phone source. Confirm it cannot enter the calling queue. Add a score-7 lead with a source URL, then a normalized duplicate domain/phone; confirm the duplicate is rejected and unverified details never appear in the calling queue. Confirm records and call logs remain private.
+3. Log a no-answer call with notes and a follow-up date. Confirm the contact history is retained, a task suggestion appears in Approval Inbox, and no task exists until approval. Edit, snooze/undo, dismiss, or approve the suggestion; confirm approval creates one linked private task and a repeated approval does not duplicate it. Record “Do not contact” and confirm future queueing and task approval are blocked.
+4. Book a consultation and complete one. Confirm each proposes only a reviewable prep task. Draft an estimate linked to a prospect; verify the lead moves to Proposal while the estimate remains Draft and its amount is not signed or collected revenue. Only explicit contract-value entry and a manual Won status count as contracted work.
+5. Verify estimates, contract values, actual Studio income transactions, and received project payments appear as separate totals. Do not treat prospect opportunity value or an estimate as cash.
+6. Pause/resume, skip/undo, edit one occurrence, and move one occurrence. Confirm the rule history is kept, only the selected occurrence changes, generated events/tasks appear in Calendar and Day Director, and conflicts are shown for review without automatic movement or completion.
+7. With keyboard and touch, navigate to the calling queue, open/save a call log, review its approval, pause the schedule, and edit a prospect. Confirm visible focus and labels on an actual phone/tablet before device acceptance.
+
+The local recurring schedule checks while DreamHub is open and materializes only a rolling window. Background scheduling, uploaded attachments, live external contact verification, and outbound communications are not implemented.
