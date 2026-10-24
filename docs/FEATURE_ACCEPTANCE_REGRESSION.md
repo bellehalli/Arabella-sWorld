@@ -42,6 +42,27 @@ Run the automated checks with `npm test`. The UI suite also renders all routes w
 3. Add inventory with a warranty date, a recurring maintenance item, and a document checklist. Mark a due review complete and verify recurring maintenance advances to the next valid date, including month-end clamping.
 4. Toggle checklist items, edit the checklist, trash it, restore it, and include it in a full export.
 
+### Career preparation and offer review
+
+1. Save a reusable question, resume/portfolio version, career contact, and source. Confirm private records remain private after editing and survive export/restore.
+2. Save an interview prep note linked to an active application. Confirm it is private and the follow-up draft is not sent.
+3. Add a due follow-up date to an application. Create the linked task twice and confirm only one task exists; verify its date and application backlink.
+4. Compare salary and hourly examples with paid and unpaid weeks. Confirm gross totals use entered assumptions and benefit notes are not assigned a dollar value.
+
+### Care, relationships, Grimoire, and Estate
+
+1. In My Care Concierge, unlock the encrypted vault; create a product and optional routine, log a dated step, export an encrypted backup, and verify a failed save does not claim success. Keep care entries optional and non-diagnostic.
+2. Add an occasion without reminder opt-in and confirm it is absent from the reminder list. Opt in and confirm it appears only in the in-app date range. Edit/trash/restore the occasion and a pet-care plan.
+3. Add an experience wish, mark a visit complete, and verify the visited/wished counts. Add and edit a media item and verify its user-entered source and progress persist.
+4. Save a custom spread, record a manual reversed card entry, save a personal correspondence, and search symbols. Confirm sensitive and deleted entries remain excluded from symbol previews.
+5. Open every visible Estate room with keyboard and touch. Confirm arrow-key focus movement and the plain-dashboard link work; no route requires animation.
+
+### Statement reconciliation
+
+1. Import a CSV with an exact existing manual transaction, a new transaction, and two equally plausible matches. Confirm the exact match is only suggested, the new row is selectable, and ambiguous rows remain unchecked.
+2. Approve the exact match and the new row. Confirm the saved transaction is marked reconciled, the new row is imported once with its fingerprint, and a repeat import does not duplicate either entry.
+3. Confirm no account connection or payment permission is requested. A live bank feed requires a separately approved provider and security review.
+
 ## Failure checks
 
 1. Simulate storage failure during a save. Confirm an error is visible, no successful save is claimed, and the editor retains the entered text.

@@ -11,7 +11,7 @@ This sequence governs feature development on `main`, the current reference branc
 
 ## Starting point
 
-The current source inventory contains 46 navigation routes and 70 typed record forms, including the ten §5 advanced systems, a 16-week Academy scaffold, local encrypted backup/restore, and a local approval-based Automation Atelier. Source counts are generated from `catalog.mjs`; a route or form alone does not count as a complete advanced workflow. Capture & Continuity, Planning, and Studio/Finance/Home route acceptance are merged to `main` (PRs #19, #20, and #23). Career, wellness/care, relationships/pets/experiences/library, Grimoire, and Dream Estate workflows remain open in Phase 1. Merged development work is not a production release.
+The current source inventory contains 46 navigation routes and 74 typed record forms, including the ten §5 advanced systems, a 16-week Academy scaffold, local encrypted backup/restore, and a local approval-based Automation Atelier. Source counts are generated from `catalog.mjs`; a route or form alone does not count as a complete advanced workflow. Capture & Continuity, Planning, and Studio/Finance/Home route acceptance are merged to `main` (PRs #19, #20, and #23). Career, wellness/care, relationships/pets/experiences/library, Grimoire, and Dream Estate route journeys and the new Career/statement-reconciliation acceptance flows are implemented and covered by focused automated/UI tests. Live financial account connections remain outside the local/manual product phase. Merged development work is not a production release.
 
 ## Phase 1 — Product workflows and advanced capabilities
 
@@ -39,14 +39,14 @@ Build against the Bible's route and journey contracts. Complete existing modules
 
 ### Personal operations
 
-- [ ] Career: interviews, question bank, outcome notes, resume/portfolio version inventory, source links, contacts, follow-ups, and transparent compensation comparisons.
+- [x] Career: interview preparation and outcomes, reusable question bank, resume/portfolio version inventory, source links, contacts, idempotent dated follow-up tasks, and transparent gross compensation comparisons with visible hours, paid/unpaid weeks, and unmonetized benefit notes.
 - [x] Studio: scope and exact-cent quote builder, accepted-scope milestones, expected vs received payment records, revision/change log, deliverables, outreach log, launch QA, and estimates distinct from invoices and received cash.
-- [x] Finance: manual account balances, confirmed vs expected income, envelope/category plans, bills/subscriptions, sinking funds, affordability and cashflow scenarios with visible assumptions, and duplicate-aware CSV statement review. Bank feeds and statement reconciliation remain outside this local/manual workflow.
+- [x] Finance: manual account balances, confirmed vs expected income, envelope/category plans, bills/subscriptions, sinking funds, affordability and cashflow scenarios with visible assumptions, duplicate-aware CSV review, and manual reconciliation suggestions. Reconciliation requires exact amount/direction and a bounded posting-date window; ambiguous candidates stay unchecked. Live bank feeds remain outside this local/manual workflow.
 - [x] Home/admin: entered-cost apartment comparison, preview-and-approve moving timeline, inventory, warranties, recurring maintenance, errands, document checklist, and renewal tracking.
-- [ ] Wellness/care: optional logs, appointment preparation, routines and inventory with sensitive-data handling; no diagnostic claims.
-- [ ] Relationships/pets/experiences/library: opt-in occasions and reminders, care schedules, visited-vs-wished experiences, media tracking, and manual source/location details.
-- [ ] Grimoire/dreams: customizable spreads and positions, reversed/manual card entries, personal correspondences with optional sources, searchable symbols, and reflective framing.
-- [ ] Dream Estate: route-complete accessible 2D navigation with a plain-dashboard escape; no essential action depends on animation.
+- [x] Wellness/care: optional dated routine logs, healthcare appointment preparation, configurable routines and product inventory in a separate encrypted local care vault; no diagnostic claims. The care vault does not sync with the main workspace.
+- [x] Relationships/pets/experiences/library: opt-in in-app occasion reminders, editable contact and pet-care schedules, visited-vs-wished tracking, and media progress with user-entered source/location details. No outreach or background delivery is implied.
+- [x] Grimoire/dreams: editable spreads and positions, manual card entries with upright/reversed orientation, personal correspondences and optional sources, symbol search, and reflective framing.
+- [x] Dream Estate: route-complete accessible 2D navigation with keyboard movement and a plain-dashboard escape; no essential action depends on animation.
 
 ### Feature phase acceptance
 
@@ -159,3 +159,12 @@ No release is complete until feature acceptance, security review, visual/accessi
 - Route acceptance now renders every route empty, checks native named controls and literal action handlers, edits all typed records while preserving privacy classification, verifies export and trash/restore, simulates a failed save without losing the draft, and exercises Studio/Finance/Home approval paths.
 - Added a keyboard/touch and high-risk manual regression procedure. Actual browser/device and screen-reader validation remains in the later visual/accessibility phase.
 - README inventory reports 46 routes and 70 typed record forms. `npm test` passed 211/211 after PR #23 merged; changed-module syntax checks and `git diff --check` pass. This is a development milestone, not a production release.
+
+
+### Slice 9 — Career, personal care and statement reconciliation — 2026-10-24
+
+- Career now includes a reusable starter question bank with user-owned saved prompts, private typed resume/portfolio/work-sample versions, private source and contact records, and one idempotent follow-up task per due application. Nothing is sent.
+- The compensation worksheet compares two user-entered offers using annual gross pay and effective gross pay per working hour. It surfaces paid/unpaid weeks and keeps benefits as context rather than assigning guessed dollar values.
+- Care, relationships, pets, experiences, Grimoire, and Dream Estate already had route-level implementations in the main source. The acceptance review confirms the encrypted local care vault, opt-in in-app occasions, pet schedules, visited/wished ledger, manual media source/progress, custom/manual/reversed tarot entries, symbol search, keyboard route map, and plain-dashboard escape.
+- Statement review now suggests exact-amount/direction candidates within a configurable bounded posting-date window. Unique likely matches can be explicitly reconciled; ambiguous rows stay unchecked; unmatched selected rows are imported and marked reconciled. This is manual CSV reconciliation, not a live bank connection.
+- Verification: career helpers and statement reconciliation engines have focused tests; Career and statement flows have UI acceptance coverage. Verification: full `npm test` passed 215/215; 46 routes and 74 typed record forms are generated from the current catalog. Changed modules pass `node --check` and `git diff --check`.

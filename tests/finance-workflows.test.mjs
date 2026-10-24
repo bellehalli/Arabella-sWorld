@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {statementRows,statementReview,forecastCashflow,affordabilityScenario,envelopeUsage} from '../finance-workflows.mjs';
+import {statementRows,statementReview,reconciliationReview,forecastCashflow,affordabilityScenario,envelopeUsage} from '../finance-workflows.mjs';
 const row=(type,title,data,date='2026-10-01')=>({id:title,type,title,date,data,deletedAt:null});
 
 test('statement CSV parser handles quoted commas, debit/credit columns and rejects malformed rows',()=>{
@@ -14,6 +14,13 @@ test('statement review marks both existing and within-file duplicates before imp
  const rows=statementRows('date,description,amount\n2026-10-01,Market,-18.22\n2026-10-01,Market,-18.22\n2026-10-02,Pay,120.00');
  const existing=row('transaction','Market',{amount:1822,direction:'Expense',statementFingerprint:rows[0].fingerprint});
  const review=statementReview(rows,[existing]);assert.deepEqual(review.map(x=>x.duplicate),[true,true,false]);assert.deepEqual(review.map(x=>x.selected),[false,false,true]);
+});
+
+test('reconciliation proposes only amount-direction candidates and holds ambiguous matches for review',()=>{
+ const rows=statementRows('date,description,amount,account\n2026-10-03,Coffee Shop,-4.50,Checking\n2026-10-04,Unknown,-7.00,Checking');
+ const existing=[row('transaction','Coffee Shop',{amount:450,direction:'Expense',accountName:'Checking'},'2026-10-02'),row('transaction','Unknown A',{amount:700,direction:'Expense',accountName:'Checking'},'2026-10-04'),row('transaction','Unknown B',{amount:700,direction:'Expense',accountName:'Checking'},'2026-10-04')];
+ const repeated=[...rows,rows[0]],review=reconciliationReview(repeated,existing);assert.equal(review[0].status,'match');assert.equal(review[0].matches[0].id,'Coffee Shop');assert.equal(review[1].status,'ambiguous');assert.equal(review[1].selected,false);assert.equal(review[2].status,'duplicate-in-file');assert.equal(review[2].selected,false);
+ assert.throws(()=>reconciliationReview(rows,existing,{dateWindowDays:8}),/0 to 7/i);
 });
 
 test('cashflow forecast keeps manual balances, confirmed income, optional estimates and monthly bills distinct',()=>{

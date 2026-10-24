@@ -23,6 +23,26 @@ export function statementRows(text){
 function parseCents(raw){const s=String(raw??'').trim().replace(/^\((.*)\)$/,'-$1').replace(/[$,\s]/g,'');if(!/^[+-]?\d+(\.\d{1,2})?$/.test(s))return NaN;const negative=s.startsWith('-'),clean=s.replace(/^[+-]/,''),[whole,frac='']=clean.split('.'),n=Number(whole)*100+Number(frac.padEnd(2,'0'));return Number.isSafeInteger(n)?(negative?-n:n):NaN;}
 export function statementFingerprint(row){return [row.date,norm(row.description),cents(row.amount),row.direction==='Income'?'Income':'Expense'].join('|');}
 export function statementReview(rows,records=[]){const seen=new Set(records.filter(r=>r.type==='transaction'&&!r.deletedAt).map(r=>r.data?.statementFingerprint).filter(Boolean));const within=new Set();return rows.map((row,index)=>{const fingerprint=row.fingerprint||statementFingerprint(row),duplicate=seen.has(fingerprint)||within.has(fingerprint);within.add(fingerprint);return {...row,fingerprint,duplicate,selected:!duplicate,index};});}
+
+// Suggest reconciliation candidates for imported statement rows. Amount and direction
+// must agree exactly; a small date window and normalized description are used only to
+// produce suggestions. Ambiguous matches are never silently selected.
+export function reconciliationReview(rows,records=[],{dateWindowDays=3}={}){
+ if(!Number.isInteger(dateWindowDays)||dateWindowDays<0||dateWindowDays>7)throw Error('Choose a statement date window from 0 to 7 days.');
+ const tx=records.filter(r=>r.type==='transaction'&&!r.deletedAt),used=new Set(),seen=new Set();
+ return rows.map((row,index)=>{
+  const fingerprint=row.fingerprint||statementFingerprint(row),exactImported=tx.some(r=>r.data?.statementFingerprint===fingerprint);
+  if(seen.has(fingerprint))return {...row,index,fingerprint,status:'duplicate-in-file',matches:[],selected:false};
+  seen.add(fingerprint);
+  if(exactImported)return {...row,index,fingerprint,status:'already-imported',matches:[],selected:false};
+  const candidates=tx.filter(r=>!r.data?.reconciledAt&&!used.has(r.id)&&cents(r.data?.amount)===cents(row.amount)&&r.data?.direction===row.direction&&Math.abs(dayOrdinal(r.date)-dayOrdinal(row.date))<=dateWindowDays&&(!row.account||!r.data?.accountName||norm(row.account)===norm(r.data.accountName)));
+  const desc=norm(row.description),scored=candidates.map(r=>{const saved=norm(r.title),descriptionScore=saved===desc?2:saved.includes(desc)||desc.includes(saved)?1:0;const dateScore=r.date===row.date?2:1;return {id:r.id,title:r.title,score:descriptionScore+dateScore};}).filter(x=>x.score>=2).sort((a,b)=>b.score-a.score||a.id.localeCompare(b.id));
+  const best=scored.length?scored[0].score:0,matches=scored.filter(x=>x.score===best);
+  if(matches.length===1){used.add(matches[0].id);return {...row,index,fingerprint,status:'match',matches,selected:true};}
+  if(matches.length>1)return {...row,index,fingerprint,status:'ambiguous',matches,selected:false};
+  return {...row,index,fingerprint,status:'unmatched',matches:[],selected:true};
+ });
+}
 export function envelopeUsage(envelope,transactions,{from,to}={}){const start=dayOrdinal(from),end=dayOrdinal(to);if(!Number.isFinite(start)||!Number.isFinite(end)||end<start)throw Error('Choose a valid envelope period.');const spent=transactions.filter(r=>r.type==='transaction'&&!r.deletedAt&&r.data?.direction==='Expense'&&r.data?.category===envelope.data?.category&&r.date>=from&&r.date<=to).reduce((n,r)=>n+cents(r.data.amount),0),limit=cents(envelope.data?.limit);return {limitCents:limit,spentCents:spent,remainingCents:limit-spent,overLimitCents:Math.max(0,spent-limit),percent:limit?Math.min(100,Math.round(spent/limit*100)):0};}
 export function forecastCashflow(records,{from,to,includeExpected=true}={}){
  const start=dayOrdinal(from),end=dayOrdinal(to);if(!Number.isFinite(start)||!Number.isFinite(end)||end<start||end-start>366)throw Error('Choose a valid forecast range of up to one year.');

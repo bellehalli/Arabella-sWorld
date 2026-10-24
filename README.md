@@ -4,16 +4,17 @@ A blush/lavender personal life workspace with heart controls, illustrated readin
 
 ## Working in this build
 
-- 46 navigable spaces and 70 typed record forms, common IDs, labels, favorites, links/backlinks, ten previous edit snapshots. Counts are generated from `catalog.mjs` (`groups` and `types`).
+- 46 navigable spaces and 74 typed record forms, common IDs, labels, favorites, links/backlinks, ten previous edit snapshots. Counts are generated from `catalog.mjs` (`groups` and `types`).
 - Journals, diary, mixed moods/intensities/custom feelings, dreams, grimoire rituals and readings.
 - Original 78-card tarot reference, random reflective three-card spreads, saved reading drafts.
 - Task workflows include linked subtasks and prerequisites, next actions, blockers, contexts and locations, plus fixed, before, flexible-window and someday due dates. Completing a task waits for its prerequisites.
 - Day/week/month calendar planning with saved timezone, daylight-saving gap/fold choices, overlap review, manual ICS preview/import and timezone-correct ICS export. Recurrence rules can be paused, skipped once, and approved per occurrence.
 - Focus sessions link to ready tasks, offer break flow, a local opt-in sound, distraction parking and bounded session history. Habit templates have weekly targets, retained logs and pause/resume controls. Weekly reset and minimum-viable-day views surface capacity warnings without silently moving work.
-- Career and studio pipelines, gross compensation calculator, learning, home, beauty, wardrobe, people, pet care, travel, memories, wishes, reviews, seasons and decisions.
+- Career and studio pipelines with interview prep, reusable questions, private resume/portfolio version inventory, source/contact tracking, dated follow-up tasks, and a transparent offer comparison using entered pay, hours, work weeks, and benefit notes. Learning, home, beauty, wardrobe, people, pet care, travel, memories, wishes, reviews, seasons and decisions.
 - Studio delivery desk with exact-cent estimate line items, client approval, accepted-scope milestones, expected and received payments, change log, deliverables, outreach history and launch QA. Estimates, invoices and received cash are separate records.
-- Finance workflows for manual account snapshots, confirmed/expected income, category envelopes, bills and subscriptions, sinking funds, cashflow and affordability scenarios, and duplicate-aware CSV statement review. No account is connected and no payment is sent.
+- Finance workflows for manual account snapshots, confirmed/expected income, category envelopes, bills and subscriptions, sinking funds, cashflow and affordability scenarios, duplicate-aware CSV statement review, and an explicit reconciliation review that proposes exact amount/direction matches within a bounded posting-date window. Ambiguous matches stay unselected. No account is connected and no payment is sent.
 - Home administration for entered-cost apartment comparisons, approved moving timelines, inventory and warranties, recurring maintenance, errands, renewals and document checklists.
+- Wellness and care workflows use optional date-based logs, healthcare appointment preparation, editable care routines, and an encrypted local care vault for product inventory. Relationship occasions are opt-in in-app reminders; pet care schedules, visited/wished experiences, and user-entered media sources/progress are editable local records. The Grimoire supports custom spreads, manual/reversed entries, personal symbols/correspondences, and reflective framing. Dream Estate has accessible route navigation and a plain-dashboard escape.
 - Manually enabled/run application-follow-up recipe with preview, per-record deduplication and run history. No outward actions.
 - Draft recovery, same-record conflict detection, save failure retention, trash/undo, JSON merge import, CSV/Markdown/ICS exports.
 - Encrypted full-workspace backup export and explicit whole-workspace restore; ordinary JSON export remains available for readable portability.
@@ -55,7 +56,7 @@ A concealed search preview is not a device lock or encryption. Main workspace re
 
 ## Still outside this milestone
 
-Live cloud provisioning/owner setup and real cross-device tests; Vercel Git integration; live browser/device visual and accessibility testing; fully normalized cloud schema; full offline service worker; attachments vault; drag/resize calendar blocks and external calendar synchronization; rich-text editor; full custom workflow builder; notification infrastructure; bank integrations and statement reconciliation; remaining Career workflows (question bank, resume/portfolio inventory, sources/contacts, follow-up tasks and compensation comparisons); remaining wellness/care, relationships/pets/experiences/library and Dream Estate journeys; sophisticated wardrobe/room canvases; full v5 automation engine.
+Live cloud provisioning/owner setup and real cross-device tests; Vercel Git integration; live browser/device visual and accessibility testing; fully normalized cloud schema; full offline service worker; attachments vault; drag/resize calendar blocks and external calendar synchronization; rich-text editor; full custom workflow builder; notification infrastructure; live bank integrations; sophisticated wardrobe/room canvases; full v5 automation engine.
 
 No database, hosting plan, external account, billing setting, or production deployment is changed automatically by this source.
 
