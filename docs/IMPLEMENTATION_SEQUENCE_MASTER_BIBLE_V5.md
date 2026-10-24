@@ -198,3 +198,11 @@ No release is complete until feature acceptance, security review, visual/accessi
 - Recovery Room now consolidates overdue admin work and failed automation actions, omits linked source records when their tasks already represent them, supports handled-elsewhere with a one-step undo, and keeps private approval titles hidden in failure summaries.
 - A Day Director stress regression combines meal prep, errands, a renewal, pet restock, healthcare travel/prep/recovery buffers, and a confirmed shift. It verifies capacity, deferral, and conflict behavior. A failed-save regression confirms the Recovery Room does not claim success or offer a false undo.
 - Verification: full `npm test` passes 248/248; changed-module syntax checks and `git diff --check` pass; no caregiver-specific UI, engine, or acceptance references remain. README and regression steps were reconciled. This remains a private local workflow milestone, not a production release or shared-planning feature.
+
+
+### Slice 13 — Day-first planner, ordered morning products, and tiered wishlist — 2026-10-24
+
+- Calendar now opens in Day view and retains the existing Day/Week/Month switching controls.
+- Private care vault supports a one-click Morning routine, user-entered product library with brand, size, status, and use notes, numbered ordered steps with product instructions, and step reordering. Product choices and sequence are user-supplied; no products are preselected or invented.
+- Wishlist now has three tiers (Need soon, Planned, Someday), each capped at 500 entries, with editable item name, category, optional entered price, retailer, link, and why. Wishlist records default to private classification and use existing edit/trash/export paths. Empty buckets are created implicitly; no products or prices are fabricated.
+- Verification: full `npm test` passes 251/251, including default Day view, all view switches, private wishlist create/capacity, ordered routine products and step movement.
