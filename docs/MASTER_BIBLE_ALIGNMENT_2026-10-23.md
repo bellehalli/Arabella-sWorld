@@ -8,6 +8,7 @@ Scope: read-only comparison of the repository's default `main` source and projec
 |---|---|---|
 | Manual-first product and visual direction | Broadly implemented | 32 routes and 32 typed record forms, three modes, theme options, reduced-motion support, and no paid AI or bank connection in this milestone. |
 | Core life modules | Broadly represented, with varying depth | Journaling, mixed moods, grimoire, tasks, money, career, studio, home, wellness/beauty, wardrobe, relationships, pets, travel, and memories exist in the review build. Several advanced systems remain outside the milestone. |
+| Belle Academy | Upgraded in this branch; curriculum depth remains in progress | The Academy now creates a dated 16-week map with five courses, 80 weekly learning plans, 80 assignments and 20 assessments, within the defined 12-hour weekly allocation. It supports diagnostics, evidence-based 80% mastery, score capture, a clearly provisional transcript, source provenance, and spaced English vocabulary reviews. The content is an editable learning scaffold, not a complete faculty-authored course, official credential, or verified reading library. |
 | Data portability | Partial; improved in this branch | Existing readable JSON/CSV/Markdown/ICS exports and merge import remain. This branch adds encrypted full-state backup and explicit replacement restore with schema validation and persistence-failure safety tests. |
 | Privacy and security | Release blocker | Main workspace data and drafts remain plaintext in browser storage. Only the separate care vault is encrypted at rest. A concealed search preview is not access control. |
 | Identity, authorization, cross-device sync | Not verified | Supabase adapter and owner-scoped SQL migration exist, but there is no configured staging project, applied migration, real owner/second-account RLS test, or verified two-device sync. |
@@ -21,6 +22,15 @@ Scope: read-only comparison of the repository's default `main` source and projec
 - Added encrypted backup import that validates the full DreamHub schema before prompting to replace current data.
 - Kept readable JSON export and safe, conflict-stopping merge import available.
 - Added tests for plaintext exclusion, exact state round-trip, wrong passphrases, tampering, foreign vault files, invalid backups, and failed persistence.
+
+## In-app feature increment — October 24, 2026
+
+- Added an editable, 16-week Belle Academy semester generator. Course load is 12 hours/week across CS201, BUS201, FND101, SPA101, and RES101; assignments and checkpoint exams count inside each course's weekly time budget. Generation is idempotent by semester start date and does not create calendar events.
+- Added per-course diagnostics, learning-evidence capture with an 80% mastery rule, graded assignment/exam evidence, and a transcript view that labels incomplete grade coverage as provisional instead of filling missing categories with invented marks.
+- Added a research notebook requiring source title and URL, preserving access date, method, limits, and learner synthesis. The UI does not claim novelty or faculty review.
+- Added a 5-foundational/15-advanced vocabulary intake and spaced recall with due dates and recall confidence. New words begin unmastered.
+- Added deterministic engine and simulated-UI coverage for term generation, weekly effort accounting, diagnostics, mastery, research provenance, recall progression, and grade coverage.
+- Current local validation after this increment: see the latest branch test run before publishing; live browser, database, device, and staging acceptance remain deferred.
 
 ## Gates still requiring an isolated environment or further security review
 
