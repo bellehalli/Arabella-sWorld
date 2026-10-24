@@ -11,7 +11,7 @@ This sequence governs feature development on `main`, the current reference branc
 
 ## Starting point
 
-The current source inventory contains 46 navigation routes and 70 typed record forms, including the ten §5 advanced systems, a 16-week Academy scaffold, local encrypted backup/restore, and a local approval-based Automation Atelier. Source counts are generated from `catalog.mjs`; a route or form alone does not count as a complete advanced workflow. Capture & Continuity and Planning are merged to `main`. The Personal Operations and route-level acceptance work below is being completed in the current feature slice; merged development work is not a production release.
+The current source inventory contains 46 navigation routes and 70 typed record forms, including the ten §5 advanced systems, a 16-week Academy scaffold, local encrypted backup/restore, and a local approval-based Automation Atelier. Source counts are generated from `catalog.mjs`; a route or form alone does not count as a complete advanced workflow. Capture & Continuity, Planning, and Studio/Finance/Home route acceptance are merged to `main` (PRs #19, #20, and #23). Career, wellness/care, relationships/pets/experiences/library, Grimoire, and Dream Estate workflows remain open in Phase 1. Merged development work is not a production release.
 
 ## Phase 1 — Product workflows and advanced capabilities
 
@@ -158,4 +158,4 @@ No release is complete until feature acceptance, security review, visual/accessi
 - Home/admin adds apartment comparisons from entered data, a move timeline that writes tasks only after approval, inventory and warranty review, maintenance recurrence, errands/renewals, and editable document checklists.
 - Route acceptance now renders every route empty, checks native named controls and literal action handlers, edits all typed records while preserving privacy classification, verifies export and trash/restore, simulates a failed save without losing the draft, and exercises Studio/Finance/Home approval paths.
 - Added a keyboard/touch and high-risk manual regression procedure. Actual browser/device and screen-reader validation remains in the later visual/accessibility phase.
-- README inventory now reports 46 routes and 70 typed record forms. Verification: pending final full-suite run and merge.
+- README inventory reports 46 routes and 70 typed record forms. `npm test` passed 211/211 after PR #23 merged; changed-module syntax checks and `git diff --check` pass. This is a development milestone, not a production release.
