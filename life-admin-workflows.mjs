@@ -34,12 +34,6 @@ export function createAdminFollowup({title,date,category='Renewal',details='',am
  return {item,task};
 }
 
-export function createCareCoverage({title,date,start,end,helper='',contact='',backupPlan='',travelMinutes=0}={}){
- const name=titleText(title)||'Caregiving coverage';if(!validDate(date)||!timeOK(start)||!timeOK(end)||start===end)throw Error('Enter a valid coverage date and distinct start/end times.');
- if(!Number.isInteger(travelMinutes)||travelMinutes<0||travelMinutes>360)throw Error('Travel buffer must be 0–360 minutes.');
- return record('event',{title:name,date,status:'Confirmed',sensitive:true,tags:['Caregiving','Coverage'],body:[helper&&`Coverage: ${helper}`,contact&&`Contact: ${contact}`,backupPlan&&`Backup: ${backupPlan}`].filter(Boolean).join('\n'),data:{category:'Caregiving',time:start,endTime:end,travelMinutes,coverageConfirmed:true,transportFallback:String(backupPlan||'').slice(0,500)}});
-}
-
 export function attachTransportContingency(event,{mode='',route='',backupPlan='',travelMinutes=0}={}){
  if(!event||event.type!=='event'||event.deletedAt)throw Error('Choose an active calendar event.');
  if(!Number.isInteger(travelMinutes)||travelMinutes<0||travelMinutes>360)throw Error('Travel buffer must be 0–360 minutes.');
@@ -50,4 +44,44 @@ export function careFollowupTasks(records,appointment){
  if(!appointment||appointment.type!=='event'||appointment.data?.category!=='Healthcare'||!validDate(appointment.date))return [];
  const choices=[['prepare','Prepare questions, records and medications'],['transport','Confirm ride, route, arrival and accessibility'],['followup','Review visit instructions and schedule next care']];
  return choices.filter(([key])=>!records.some(r=>!r.deletedAt&&r.type==='task'&&r.data?.appointmentId===appointment.id&&r.data?.healthStep===key)).map(([key,title])=>record('task',{title:`${title} · ${appointment.title}`,date:appointment.date,sensitive:true,tags:['Healthcare preparation','Day Director'],links:[appointment.id],data:{appointmentId:appointment.id,healthStep:key,dueMode:'on',priority:'Important'}}));
+}
+
+const readinessSteps=[
+ ['passport','Check passport validity for every traveler and destination',90],
+ ['entry','Review official entry, visa, and customs requirements for your passport and itinerary',90],
+ ['transport','Review long-distance transportation options and arrival plans',60],
+ ['lodging','Choose and verify lodging arrangements',60],
+ ['reservations','Review reservations, activity confirmations, and cancellation dates',30],
+ ['communications','Review phone, data, and payment access while traveling',14],
+ ['insurance','Review travel insurance and cancellation terms',45],
+ ['health','Review medication, health, and accessibility needs for the itinerary',30],
+ ['documents','Save copies of reservations and essential travel documents securely',21],
+ ['budget','Review trip budget, payment access, and emergency buffer',14],
+ ['packing','Build and check a packing list for the planned weather and activities',7],
+ ['emergency','Save emergency contacts, lodging details, and an offline itinerary copy',7],
+ ['home','Prepare home and Freyja supplies for the time away',3]
+];
+const offsetDate=(date,days)=>{const d=new Date(date+'T12:00:00Z');d.setUTCDate(d.getUTCDate()-days);return d.toISOString().slice(0,10)};
+export function createTripReadinessTasks(trip,{existing=[],today=new Date().toISOString().slice(0,10)}={}){
+ if(!trip||trip.type!=='travel'||trip.deletedAt)throw Error('Choose an active saved trip.');
+ if(!validDate(today))throw Error('Choose a valid review date.');
+ const start=trip.data?.startDate||trip.date||'',tripId=trip.id;
+ if(start&&!validDate(start))throw Error('The trip departure date is invalid.');
+ return readinessSteps.filter(([key])=>!existing.some(x=>!x.deletedAt&&x.type==='task'&&x.data?.tripId===tripId&&x.data?.tripReadinessKey===key)).map(([key,title,offset])=>{
+  const suggested=start?offsetDate(start,offset):'';
+  const date=suggested? (suggested<today?today:suggested):'';
+  return record('task',{title:`${title} · ${trip.title}`,date,status:'Next',sensitive:true,tags:['Travel readiness','Day Director'],links:[tripId],data:{tripId,tripReadinessKey:key,priority:'Important',dueMode:date?'on':'someday',suggestedDate:date||null}});
+ });
+}
+
+export function overdueAdminReview(records,today){
+ if(!validDate(today))throw Error('Choose a valid review date.');
+ const all=records.filter(x=>!x.deletedAt),live=all.filter(x=>x.status!=='Done'),linkedTasks=new Set(all.filter(x=>x.type==='task').flatMap(x=>x.links||[]));
+ const due=x=>x.type==='homeAdmin'?x.data?.dueDate:x.type==='petCare'?x.data?.next:x.type==='grocery'?x.data?.neededBy:x.date;
+ return live.filter(x=>{
+  const date=due(x);if(!validDate(date)||date>=today)return false;
+  if(x.type==='task')return !x.data?.dependsOn?.some(id=>live.find(y=>y.id===id)?.status!=='Done');
+  if(['grocery','homeAdmin','petCare','bill'].includes(x.type))return !linkedTasks.has(x.id);
+  return false;
+ }).map(x=>({...x,reviewDueDate:due(x)})).sort((a,b)=>a.reviewDueDate.localeCompare(b.reviewDueDate)||a.title.localeCompare(b.title));
 }

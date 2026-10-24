@@ -44,7 +44,7 @@ Run the automated checks with `npm test`. The UI suite also renders all routes w
 
 ### Day Director
 
-1. Add a confirmed shift with start/end, commute, preparation, and recovery time; add a tentative shift, timed appointment, caregiving event, all-day event, due task, and dependency-blocked task.
+1. Add a confirmed shift with start/end, commute, preparation, and recovery time; add a tentative shift, timed personal appointment, all-day event, due task, and dependency-blocked task.
 2. Preview a day with a chosen awake window, energy, focus-minute cap, and rest protection. Confirm tentative shifts do not block time, confirmed commitments and travel do, due tasks rank ahead appropriately, blocked tasks are called out, and impossible work remains unscheduled.
 3. Move a proposed block into a conflict and confirm approval is blocked with a clear explanation. Adjust it or uncheck it; approve the valid plan and verify only private linked calendar blocks and an audit record are added. Original shift/event times and task due dates must not change.
 4. Approve a revised plan. Confirm earlier generated blocks move to Trash and can be restored. Simulate a failed save and confirm no plan is reported as saved.
@@ -91,8 +91,13 @@ Run the automated checks with `npm test`. The UI suite also renders all routes w
 
 1. Save meals for different dates, add a prep task, and verify that only the linked task enters Day Director. Add meal ingredients to the grocery list and confirm duplicate active items are not copied.
 2. Add a grocery item with stock and a reorder threshold. Confirm low stock is called out, a shopping task is optional and idempotent, and marking the item bought removes it from the active list without deleting history.
-3. Add confirmed caregiving coverage and a Healthcare event. Confirm coverage and appointments become fixed planner commitments. Add healthcare/dental prep, transport, and follow-up tasks and verify the task links, due dates, and deduplication.
+3. Add a Healthcare event. Confirm appointments become fixed planner commitments. Add healthcare/dental prep, transport, and follow-up tasks and verify the task links, due dates, and deduplication.
 4. Add a renewal or paperwork follow-up and verify the linked task enters Day Director. Attach travel time and a fallback plan to an appointment; preview the day and verify the travel buffer is fixed with the event.
 5. Add Freyja supplies with quantities, reorder points, costs, and a date. Confirm the record is private, low-stock state is visible, and an optional restock task is linked and dated.
-6. Add each named trip draft. Enter dates and category budgets; verify totals and the linked savings fund use only entered amounts. Update the fund amount and verify the savings gap changes. Add an astrocartography line/location supplied by the user, view prompts, and add one as an editable itinerary task. Confirm no live chart calculation, booking, or price claim is implied.
-7. Edit, trash, restore, export, and reimport new meal, grocery, care, pet, admin, and trip records. Test invalid dates, negative money/stock values, repeated task creation, and failed persistence.
+6. Create a recurrence rule for a grocery or pet-supply task. Approve one occurrence, pause and resume the rule, edit title/frequency/source link, and confirm already approved tasks stay unchanged. Confirm a duplicate occurrence cannot be approved twice.
+7. Add each named trip draft. Enter dates and category budgets; verify totals and the linked savings fund use only entered amounts. Update the fund amount and verify the savings gap changes. Add an astrocartography line/location supplied by the user, view prompts, and add one as an editable itinerary task. Confirm no live chart calculation, booking, or price claim is implied.
+8. Edit, trash, restore, export, and reimport new meal, grocery, pet, admin, and trip records. Test invalid dates, negative money/stock values, repeated task creation, and failed persistence.
+9. Generate a trip-readiness checklist with and without a departure date; verify suggested dates are editable, duplicate generation adds nothing, all items are private and linked, and completion/reopening persists.
+10. Give Day Director a day with a healthcare appointment plus travel/prep/recovery buffers, a shift, meal prep, shopping, a renewal, and a pet restock. Confirm the preview shows conflicts/deferred work and does not overrun capacity.
+11. In Recovery Room, mark an overdue linked admin item handled elsewhere, verify its linked task is completed too, then undo and verify both original statuses return. Confirm overdue items disappear after completion and are not shown twice.
+12. Add a failed automation record with a sensitive title. Confirm Recovery Room shows a generic failure row and error text without exposing the title, and links to Approval Inbox for retry. Simulate a failed status save and verify no completion or undo is falsely reported.

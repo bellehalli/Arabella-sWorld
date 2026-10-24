@@ -22,3 +22,6 @@ test('import preview separates additions, identical records, and conflicts; appr
  const applied=await store.import(incoming,{conflictPolicy:'keep-existing',sourceLabel:'reviewed-backup.json'});assert.equal(applied.addedRecordIds[0],'new-page');assert.equal(store.state.records.find(x=>x.id==='conflict').title,'Current version');assert.equal(store.state.records.find(x=>x.id==='new-page').sourceProvenance.sourceLabel,'reviewed-backup.json');assert.equal(store.state.settings.importHistory[0].keptConflictIds[0],'conflict');
  await store.import(incoming,{conflictPolicy:'keep-existing',sourceLabel:'reviewed-backup.json'});assert.equal(store.state.records.filter(x=>x.id==='new-page').length,1);assert.equal(store.state.settings.importHistory.length,2);
 });
+
+
+test('recurrence administration fields are bounded and only allow known purposes and links',()=>{const state=blank();state.settings.recurrenceRules=[{id:'routine-1',title:'Buy groceries',start:'2026-10-24',frequency:'weekly',interval:1,weekdays:[],timezone:'America/Detroit',paused:false,skippedDates:[],kind:'task',purpose:'Groceries & household',sourceRecordId:'grocery-1'}];assert.ok(validate(state));state.settings.recurrenceRules[0].purpose='Shared household';assert.throws(()=>validate(state),/recurrence/i);});

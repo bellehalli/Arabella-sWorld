@@ -34,7 +34,7 @@ Build against the Bible's route and journey contracts. Complete existing modules
 - [x] Recurrence with explicit daily/weekly/monthly rule semantics, pause/skip/resume, bounded deduplication, timezone handling, and DST tests.
 - [x] Routine and habit templates, weekly targets, pause controls, retained neutral history, and unique weekly progress counts.
 - [x] Weekly reset, minimum-viable-day and capacity/overwhelm views, time-budget warnings, and user-selected task priorities.
-- [x] Day Director: preview a realistic day from confirmed shifts, appointments, caregiving, commute/prep/recovery buffers, task deadlines/dependencies, energy and a focus cap; review conflicts/deferred work; adjust or omit blocks; save only after explicit approval. Existing commitments and due dates stay fixed; superseded generated blocks remain recoverable.
+- [x] Day Director: preview a realistic day from confirmed shifts, appointments, commute/prep/recovery buffers, task deadlines/dependencies, energy and a focus cap; review conflicts/deferred work; adjust or omit blocks; save only after explicit approval. Existing commitments and due dates stay fixed; superseded generated blocks remain recoverable.
 - [x] Focus workflow: ready-task linking, timer controls, break flow, optional local sound, parking lot, and bounded session history.
 - [x] Goal hierarchy, milestones, linked tasks/projects, qualitative progress, and previewed, user-approved dream-to-plan conversion.
 
@@ -183,8 +183,18 @@ No release is complete until feature acceptance, security review, visual/accessi
 
 ### Slice 11 — Everyday administration and travel planning — 2026-10-24
 
-- Everyday administration connects dated meal plans and ingredients to grocery records, low-stock supplies, confirmed caregiving coverage, healthcare/dental preparation and follow-up, renewals/paperwork, pet restocks, and transportation fallback plans. Dated next actions become linked tasks; confirmed coverage and saved travel buffers are visible to Day Director as fixed commitments.
+- Everyday administration connects dated meal plans and ingredients to grocery records, low-stock supplies, healthcare/dental preparation and follow-up, renewals/paperwork, pet restocks, and transportation fallback plans. Dated next actions become linked tasks; saved travel buffers are visible to Day Director as fixed commitments.
 - Added travel drafts for a European Christmas market tour, Japan, China, and Indonesia. Dates and budgets start blank; category budgets use exact cents and link to Treasury savings funds. User-entered savings, dates, and spending determine progress—no destination costs are invented.
 - Astrocartography activity prompts require a user-entered planet line and location. The app presents reflective activity ideas and can save chosen ideas as editable itinerary tasks; it does not calculate a chart, predict outcomes, book travel, or fetch prices.
 - New typed meal and grocery records migrate additively, retain private classification, validate bounded fields and real calendar dates, and expose edit/delete/export routes. Regression coverage exercises grocery/restock lifecycle, linked Day Director tasks and commitments, trip budgets/funds, prompt review, and invalid input.
 - README inventory reports 47 routes and 76 typed record forms. Full `npm test` passes 243/243; changed-module syntax checks and `git diff --check` pass. This is a development review build, not a production release.
+
+
+### Slice 12 — Private admin continuity and trip readiness — 2026-10-24
+
+- Removed caregiver coverage creation and labels from the app and Day Director. Existing records with retired select values remain readable and preserve their value when edited; no saved data is automatically deleted. Shared plans and invitation controls are out of scope.
+- Extended recurring rules for meal prep, grocery/household supplies, healthcare/personal routines, Freyja restocks, and renewals. Rules retain optional links to private records, support pause/resume/edit/remove/skip, and require approval for each dated task or event. Editing a rule does not rewrite approved items.
+- Added an idempotent 13-step trip-readiness checklist for official entry research, passport validity, reservations, travel and lodging, insurance, health, communications, emergency details, packing, budget, and home/pet preparation. Date suggestions are tied to the entered departure date and can be edited; dates and requirements are never invented.
+- Recovery Room now consolidates overdue admin work and failed automation actions, omits linked source records when their tasks already represent them, supports handled-elsewhere with a one-step undo, and keeps private approval titles hidden in failure summaries.
+- A Day Director stress regression combines meal prep, errands, a renewal, pet restock, healthcare travel/prep/recovery buffers, and a confirmed shift. It verifies capacity, deferral, and conflict behavior. A failed-save regression confirms the Recovery Room does not claim success or offer a false undo.
+- Verification: full `npm test` passes 248/248; changed-module syntax checks and `git diff --check` pass; no caregiver-specific UI, engine, or acceptance references remain. README and regression steps were reconciled. This remains a private local workflow milestone, not a production release or shared-planning feature.

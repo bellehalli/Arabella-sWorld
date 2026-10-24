@@ -32,12 +32,12 @@ export function scheduleDay(records,date,{start='10:00',end='19:00',energy='Medi
    if(!(r.data?.shiftStatus==='Confirmed'||r.data?.confirmed===true||r.status==='Confirmed')){unconfirmedShifts.push(r);continue;}
    commitments.push({id:r.id,title:r.title,start:s,end:e,kind:'work shift',travelMinutes:Number(r.data?.travelMinutes)||defaultTravel,prepMinutes:Number(r.data?.prepMinutes)||0,recoveryMinutes:Number(r.data?.recoveryMinutes)||0});
   }else if(r.type==='event'&&!r.tags?.includes('Day Architect')){
-   const care=r.data?.category==='Caregiving'||r.tags?.some(t=>/caregiv/i.test(t)),s=toMinutes(r.data?.time);
-   if(s===null){if(r.date===date)commitments.push({id:r.id,title:r.title,start:0,end:1440,kind:care?'caregiving':'all-day commitment',source:r,travelMinutes:0,prepMinutes:0,recoveryMinutes:0});continue;}
+   const s=toMinutes(r.data?.time);
+   if(s===null){if(r.date===date)commitments.push({id:r.id,title:r.title,start:0,end:1440,kind:'all-day commitment',source:r,travelMinutes:0,prepMinutes:0,recoveryMinutes:0});continue;}
    const rawEnd=toMinutes(r.data?.endTime),sourceZone=r.data?.timeZone||timezone,endDate=rawEnd!==null&&rawEnd<=s?shiftDate(r.date,1):r.date,a=minuteInPlanZone(r.date,r.data.time,sourceZone,timezone,r.data?.timeFold,date),b=rawEnd===null?null:minuteInPlanZone(endDate,r.data.endTime,sourceZone,timezone,r.data?.timeFold,date);
    if(a.issue||b?.issue){if(r.date===date){const reason=a.issue||b.issue;timeIssues.push({id:r.id,title:r.title,reason});commitments.push({id:r.id,title:r.title,start:0,end:1440,kind:'time review',source:r,travelMinutes:0,prepMinutes:0,recoveryMinutes:0});}continue;}
    const startAt=a.minute,endAt=b?b.minute:startAt+45;if(startAt>=1440||endAt<=0)continue;
-   commitments.push({id:r.id,title:r.title,start:startAt,end:endAt,kind:care?'caregiving':'appointment',source:r,travelMinutes:Number(r.data?.travelMinutes)||(r.data?.place?defaultTravel:0),prepMinutes:Number(r.data?.prepMinutes)||0,recoveryMinutes:Number(r.data?.recoveryMinutes)||0});
+   commitments.push({id:r.id,title:r.title,start:startAt,end:endAt,kind:'appointment',source:r,travelMinutes:Number(r.data?.travelMinutes)||(r.data?.place?defaultTravel:0),prepMinutes:Number(r.data?.prepMinutes)||0,recoveryMinutes:Number(r.data?.recoveryMinutes)||0});
   }
  }
  const fixed=[];

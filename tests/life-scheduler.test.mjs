@@ -17,10 +17,10 @@ test('Day Director protects confirmed shifts, commute, preparation, recovery, an
  const p=scheduleDay(records,date,{start:'09:00',end:'18:00',includeWorkout:false,travel:20,capacityMinutes:120,protectRest:false});
  assert.equal(p.unconfirmedShifts[0].id,'maybe');assert.ok(p.fixed.some(x=>x.title==='Get ready for Serving shift'));assert.ok(p.fixed.some(x=>x.title==='Travel to Serving shift'));assert.ok(p.fixed.some(x=>x.title==='Recover after Serving shift'));assert.equal(p.blocks[0].id,'task');assert.ok(p.blocks[0].end<=660||p.blocks[0].start>=1030);assert.equal(records.find(x=>x.id==='task').date,date);
 });
-test('Day Director accounts for caregiving, all-day commitments, task dependencies, deadlines, and focus capacity',()=>{
- const date='2026-10-23',records=[{...base,id:'care',type:'event',title:'Caregiving',date,data:{category:'Caregiving',time:'11:00',endTime:'13:00'}},{...base,id:'all',type:'event',title:'All day appointment',date,data:{category:'Healthcare'}},{...base,id:'blocked',type:'task',title:'Blocked step',date,minutes:20,data:{dueMode:'on',dependsOn:['missing']}},{...base,id:'later',type:'task',title:'Tomorrow only',date:'2026-10-24',minutes:30,data:{dueMode:'on'}}];
+test('Day Director accounts for appointments, all-day commitments, task dependencies, deadlines, and focus capacity',()=>{
+ const date='2026-10-23',records=[{...base,id:'care',type:'event',title:'Personal appointment',date,data:{category:'Personal',time:'11:00',endTime:'13:00'}},{...base,id:'all',type:'event',title:'All day appointment',date,data:{category:'Healthcare'}},{...base,id:'blocked',type:'task',title:'Blocked step',date,minutes:20,data:{dueMode:'on',dependsOn:['missing']}},{...base,id:'later',type:'task',title:'Tomorrow only',date:'2026-10-24',minutes:30,data:{dueMode:'on'}}];
  const p=scheduleDay(records,date,{start:'09:00',end:'18:00',includeWorkout:false,capacityMinutes:60,protectRest:false});
- assert.ok(p.fixed.some(x=>x.kind==='caregiving'));assert.ok(p.fixed.some(x=>x.kind==='all-day commitment'));assert.equal(p.blocked[0].id,'blocked');assert.equal(p.blocks.some(x=>x.id==='later'),false);assert.equal(p.blocks.length,0);assert.match(p.blocked[0].reason,/prerequisite/i);
+ assert.ok(p.fixed.some(x=>x.kind==='appointment')); assert.ok(p.fixed.some(x=>x.kind==='all-day commitment'));assert.equal(p.blocked[0].id,'blocked');assert.equal(p.blocks.some(x=>x.id==='later'),false);assert.equal(p.blocks.length,0);assert.match(p.blocked[0].reason,/prerequisite/i);
 });
 test('adjusted Day Director blocks reject overlap with fixed commitments and each other',()=>{
  const fixed=[{id:'appointment',title:'Appointment',start:600,end:660}];

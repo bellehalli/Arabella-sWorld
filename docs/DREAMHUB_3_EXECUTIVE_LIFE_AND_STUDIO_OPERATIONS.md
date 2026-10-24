@@ -35,7 +35,7 @@ User is CEO, app is consent-based chief of staff. Convert strategic priorities i
 - No fabricated owner names, emails, phone numbers, lead scores, contact history or performance metrics.
 
 ## Scheduling / Day Director decision logic
-1. Fixed anchors: work shifts, confirmed appointments, legal deadlines, sleep/recovery, caregiving.
+1. Fixed anchors: confirmed work shifts, appointments, deadlines, and protected sleep/recovery.
 2. Obligations: payments, client commitments, required follow-ups, transport, meals, personal care.
 3. Income generation: sales conversations, proposal delivery, paid client work, strategic prospect research.
 4. Belle Academy: 10–14 hours/week, default 12; can redistribute/enter maintenance mode in high-work weeks without penalizing user.
@@ -49,8 +49,7 @@ User is CEO, app is consent-based chief of staff. Convert strategic priorities i
 ## Missing grown-adult departments to audit
 - Employment payroll, taxes, work benefits, sick days and labor documentation.
 - Food/meal preparation, groceries, hydration, workday nutrition, transport contingency.
-- Caregiving schedule, family commitments, emergency contacts and backup plans.
-- Administrative renewals, legal obligations, mail and important paperwork.
+- - Administrative renewals, legal obligations, mail and important paperwork.
 - Time for friends, dating if desired, celebrations, boundaries and recovery.
 - Preventive healthcare, dental, pet care and recurring supplies.
 - Financial separation of personal and studio, emergency fund, tax planning and future housing/car.
