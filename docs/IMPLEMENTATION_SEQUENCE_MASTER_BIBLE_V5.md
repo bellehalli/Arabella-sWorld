@@ -29,13 +29,13 @@ Build against the Bible's route and journey contracts. Complete existing modules
 
 ### Executive function and planning
 
-- [ ] Task model: linked subtasks, next physical action, stuck reason, and context are implemented; dependency gating, location, and flexible due-date workflows remain.
-- [ ] Calendar: day/week/month planning, all-day/timezone handling, conflict review, ICS import/export, and manual approval for writes.
-- [ ] Recurrence with explicit rule semantics, pause/skip/resume, bounded deduplication, and DST tests.
-- [ ] Routine and habit templates, forgiving misses, weekly targets, pause controls, and neutral history.
-- [ ] Weekly reset wizard, minimum-viable-day and overwhelm views, time-budget warnings, and selected-capacity scheduling.
-- [ ] Focus workflow: task linking, break flow, optional local sound, parking lot, and useful session history.
-- [ ] Goal hierarchy, milestones, linked tasks/projects, qualitative progress, and user-approved dream-to-plan conversion.
+- [x] Task model: linked subtasks, next physical action, stuck reason, context, dependency gating, location, and fixed/before/window/someday due-date workflows.
+- [x] Calendar: day/week/month planning, timezone-aware all-day and timed events, DST gap/fold choices, conflict review, ICS import/export, and manual approval for writes.
+- [x] Recurrence with explicit daily/weekly/monthly rule semantics, pause/skip/resume, bounded deduplication, timezone handling, and DST tests.
+- [x] Routine and habit templates, weekly targets, pause controls, retained neutral history, and unique weekly progress counts.
+- [x] Weekly reset, minimum-viable-day and capacity/overwhelm views, time-budget warnings, and user-selected task priorities.
+- [x] Focus workflow: ready-task linking, timer controls, break flow, optional local sound, parking lot, and bounded session history.
+- [x] Goal hierarchy, milestones, linked tasks/projects, qualitative progress, and previewed, user-approved dream-to-plan conversion.
 
 ### Personal operations
 
@@ -139,3 +139,14 @@ No release is complete until feature acceptance, security review, visual/accessi
 - Backup import now previews new, identical, and conflicting IDs before writes. Conflict titles are hidden for sensitive records. The user explicitly approves importing new pages while preserving all current conflict versions; the default engine policy still aborts unresolved conflicts.
 - Added bounded import history with source filename, backup date, added/identical/conflict record IDs, plus per-record source provenance. Reimporting the same backup remains idempotent. Full restore stays a distinct explicit replacement flow.
 - Verification: core and UI tests cover conflict preview, sensitive-title masking, preserved local data, provenance history, idempotency, and the unchanged full-restore confirmation flow.
+
+### Slice 7 — Planning workflows — 2026-10-24
+
+- Tasks now support location, flexible due windows (fixed, before, date range, or someday), prerequisite links, cycle/reference validation, and completion gating until prerequisites are complete.
+- Calendar planning provides day/week/month ranges and a selectable timezone. Timed events preserve timezone and local end time through ICS preview/import/export; overlap review compares actual instants across timezones. DST gaps are rejected, repeated local times require an explicit earlier/later choice, and event writes remain user-approved.
+- Recurrence supports daily, selected weekdays, and monthly rules with interval, timezone, local time/fold, pause/resume, skip-once, and explicit occurrence approval. Duplicate approvals are bounded and idempotent.
+- Habit templates define target days and weekly frequency. Daily logs count once, and pause/resume preserves the existing history.
+- Weekly reset surfaces due work and capacity shortfalls; minimum-day planning selects only ready tasks and asks the user to choose priorities rather than silently rescheduling the rest.
+- Focus now links a ready task, offers timer pause/reset and a bounded break flow, optional local completion sound, distraction parking, and bounded linked session history.
+- Goals support parent/child hierarchy, qualitative progress, editable milestones, linked tasks, and a preview plus explicit approval before a dream creates linked tasks.
+- Verification: full `npm test` 183/183; `node --check` for changed modules and `git diff --check` pass; production dependency audit is recorded with the merge verification. Personal Operations and Phase 1 acceptance remain open.
