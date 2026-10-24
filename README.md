@@ -7,4 +7,61 @@ A blush/lavender personal life workspace with heart controls, illustrated readin
 - 46 navigable spaces and 74 typed record forms, common IDs, labels, favorites, links/backlinks, ten previous edit snapshots. Counts are generated from `catalog.mjs` (`groups` and `types`).
 - Journals, diary, mixed moods/intensities/custom feelings, dreams, grimoire rituals and readings.
 - Original 78-card tarot reference, random reflective three-card spreads, saved reading drafts.
-- Task workflows include linke…114966 tokens truncated…n, and does not claim a save',async()=>{location.hash='#journal';window.dispatchEvent(new window.Event('hashchange'));app.openEditor('journal');const form=document.querySelector('#record-form');form.querySelector('[name=title]').value='Keep this unsaved page';form.querySelector('[name=body]').value='Retain these exact words.';const original=app.store.put;app.store.put=async()=>{throw Error('Simulated storage failure')};try{form.dispatchEvent(new window.Event('submit',{bubbles:true,cancelable:true}));await waitFor(()=>document.querySelector('#persistent-error').textContent.includes('Simulated storage failure'));assert.equal(document.querySelector('#editor').open,true);assert.equal(form.querySelector('[name=title]').value,'Keep this unsaved page');assert.equal(form.querySelector('[name=body]').value,'Retain these exact words.');assert(!app.store.state.records.some(x=>x.title==='Keep this unsaved page'));}finally{app.store.put=original;document.querySelector('#editor').close();}});
+- Task workflows include linked subtasks and prerequisites, next actions, blockers, contexts and locations, plus fixed, before, flexible-window and someday due dates. Completing a task waits for its prerequisites.
+- Day/week/month calendar planning with saved timezone, daylight-saving gap/fold choices, overlap review, manual ICS preview/import and timezone-correct ICS export. Recurrence rules can be paused, skipped once, and approved per occurrence.
+- Focus sessions link to ready tasks, offer break flow, a local opt-in sound, distraction parking and bounded session history. Habit templates have weekly targets, retained logs and pause/resume controls. Weekly reset and minimum-viable-day views surface capacity warnings without silently moving work.
+- Career and studio pipelines with application-linked interview prep, private resume/portfolio version inventory, source/contact tracking, dated follow-up tasks, and a transparent offer comparison using entered pay, hours, work weeks, and benefit notes. Learning, home, beauty, wardrobe, people, pet care, travel, memories, wishes, reviews, seasons and decisions.
+- Studio delivery desk with exact-cent estimate line items, client approval, accepted-scope milestones, expected and received payments, change log, deliverables, outreach history and launch QA. Estimates, invoices and received cash are separate records.
+- Finance workflows for manual account snapshots, confirmed/expected income, category envelopes, bills and subscriptions, sinking funds, cashflow and affordability scenarios, duplicate-aware CSV statement review, and an explicit reconciliation review that proposes exact amount/direction matches within a bounded posting-date window. Ambiguous matches stay unselected. No account is connected and no payment is sent.
+- Home administration for entered-cost apartment comparisons, approved moving timelines, inventory and warranties, recurring maintenance, errands, renewals and document checklists.
+- Wellness and care workflows use optional date-based logs, healthcare appointment preparation, editable care routines, and an encrypted local care vault for product inventory. Relationship occasions are opt-in in-app reminders; pet care schedules, visited/wished experiences, and user-entered media sources/progress are editable local records. The Grimoire supports custom spreads, manual/reversed entries, personal symbols/correspondences, and reflective framing. Dream Estate has accessible route navigation and a plain-dashboard escape.
+- Manually enabled/run application-follow-up recipe with preview, per-record deduplication and run history. No outward actions.
+- Draft recovery, same-record conflict detection, save failure retention, trash/undo, JSON merge import, CSV/Markdown/ICS exports.
+- Encrypted full-workspace backup export and explicit whole-workspace restore; ordinary JSON export remains available for readable portability.
+- Ten Bible §5 advanced systems, searchable Life Timeline, structured personal spending guardrails, and a local approval-based automation atelier.
+- Universal Heart capture routes to a sortable inbox with bulk labels, snooze/undo, and linked conversions. Global search supports saved text/type/date/label filters, module scopes, recent places, and private text exclusion by default.
+- Continuity tools include user-owned collections, reusable record templates, validated custom fields, a browsable relationship graph, duplicate review, guided private writing, and dated Future Self letter reveals.
+- Goal hierarchy, qualitative progress, linked milestones and an explicit preview/approval flow for converting a dream into linked tasks.
+- Money scenarios compare user-entered monthly assumptions and one-time move costs with exact-cent calculations; estimates are saved explicitly.
+- Route acceptance coverage exercises empty routes, typed record edits, privacy preservation, native named controls, export, failed saves, and Studio/Finance/Home approval flows.
+- Compressed optional photo cards in selected modules; all records remain browser-local until cloud is configured.
+
+These are implemented local workflows at different levels of depth. The broader Master Bible vision is not yet complete; the staged feature, security, visual/accessibility, and automation sequence is tracked in `docs/IMPLEMENTATION_SEQUENCE_MASTER_BIBLE_V5.md`.
+
+## Run and test
+
+`npm ci --ignore-scripts`, then `npm test`.
+
+Deploy to Vercel with framework Other, no build command, and project root as output. `/api/config` is a Node function. A generic static server alone needs to serve `/api/config` as `{ "enabled": false }` for device-only mode. No preview server was launched in the managed workspace.
+
+The application itself is browser-native ES modules. The pinned Supabase client is bundled in vendor/supabase.mjs. `npm run build:sdk` rebuilds it from the pinned lockfile. Linkedom is only a test dependency, not a browser dependency. Google Fonts is optional with local system-font fallbacks.
+
+## Storage and privacy
+
+Device-only state: `arabella-dreamhub-v2` in localStorage. Drafts: `dreamhub-draft:local:<record or type>` or account-scoped draft keys in cloud mode. The old `belle-dreamhub-v1` key is never changed. Export format is versioned JSON `{format, exportedAt, state}`. Import validates first, previews additions, identical IDs and conflicts; approved imports add only new records, preserve current conflicts and record provenance. Legacy v1 migration preserves raw source fields and ledger provenance. It does not invent missing dates or habit history. Local multi-tab writes use Web Locks when supported; fallback is best effort and should not be treated as a distributed database lock.
+
+Trash is retained until manually purged. Deleted or old snapshots may also exist in exported backups. Writing history is bounded to ten prior versions. Photos consume localStorage capacity; a failed storage write leaves the editor and draft available, never claims a committed save.
+
+A concealed search preview is not a device lock or encryption. Main workspace records are still plaintext in localStorage and are not end-to-end encrypted. Encrypted backup files use a separate passphrase that cannot be recovered; full restore replaces the current workspace only after an explicit confirmation. No bank feed, analytics provider, AI API, outbound messages, purchases or financial transactions are connected.
+
+## Managed auth / cloud activation (coded, NOT provisioned or live-tested)
+
+1. Review current provider free-tier limits, data terms, storage requirements, quotas and email delivery before provisioning. No paid tier is required by the code; perpetual $0 operation is not promised.
+2. Provision a dedicated staging Supabase project. Disable public signups. Configure email OTP template to provide Token, not only a magic link; verify delivery for the owner. Invite the one intended owner through the managed Auth UI. Do not invent auth or cryptography.
+3. Apply database/001_private_sync.sql in staging. As an administrator, insert the verified invited auth.users.id into dreamhub_owners. Never ship an owner UUID based on an email guess.
+4. Set Vercel Preview environment SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY (modern `sb_publishable_…` key only). NEVER put service-role/secret keys in the client or public config endpoint. No server service-role key is needed.
+5. Redeploy Preview. Test owner email-code login, anonymous denial, other-account denial, save on two devices, conflict retention, sign-out, export, backup restore, and quota/network failure. Snapshot writes use an atomic, owner-scoped RPC with expected revision. This is a foundation snapshot store, not the final normalized v5 per-record database schema.
+6. Import any local review data manually after exporting it. There is no automatic upload of browser-local content. Cloud saves do not keep an offline replica; local drafts remain explicit. Failure to check cloud configuration blocks access rather than silently falling back to local mode.
+7. Enable production only after reviewing this exact staged candidate and passing the real authorization and restore tests.
+
+## Still outside this milestone
+
+Live cloud provisioning/owner setup and real cross-device tests; Vercel Git integration; live browser/device visual and accessibility testing; fully normalized cloud schema; full offline service worker; attachments vault; drag/resize calendar blocks and external calendar synchronization; rich-text editor; full custom workflow builder; notification infrastructure; live bank integrations; sophisticated wardrobe/room canvases; full v5 automation engine.
+
+No database, hosting plan, external account, billing setting, or production deployment is changed automatically by this source.
+
+## GitHub source
+
+Repository: https://github.com/bellehalli/Arabella-sWorld
+
+Capture & Continuity, Planning, and the Studio/Finance/Home route-acceptance slice are merged to `main`. This remains a development review build, not a production release.
