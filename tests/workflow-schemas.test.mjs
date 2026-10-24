@@ -26,3 +26,11 @@ test('versioned workflow validation rejects impossible payroll amounts and inval
  assert.throws(()=>validateWorkflowRecord({type:'lead',data:{workflowVersion:1,pipelineStage:'sent-money',contactVerified:false,suppressContact:false}}),/invalid pipeline stage/i);
  assert.throws(()=>validateWorkflowRecord({type:'studioOutreach',data:{workflowVersion:1,sendApproved:true,optedOut:false,bounced:false}}),/unsent/i);
 });
+
+
+test('meal and grocery records migrate with bounded, noninvented workflow fields',()=>{
+ const migrated=migrateWorkflowRecord(record('mealPlan',{title:'Dinner',data:{}}));assert.equal(migrated.data.workflowVersion,1);assert.equal(migrated.data.mealType,'Dinner');assert.deepEqual(migrated.data.ingredients,[]);assert.equal(migrated.data.servings,1);
+ const grocery=migrateWorkflowRecord(record('grocery',{title:'Rice',data:{category:'Pantry',onHand:2,reorderAt:1}}));assert.equal(grocery.data.checked,false);assert.equal(grocery.data.quantity,'');assert.equal(grocery.data.unit,'');assert.equal(grocery.data.neededBy,'');assert.equal(validateWorkflowRecord(grocery),true);
+ const invalid={...grocery,data:{...grocery.data,onHand:-1}};assert.throws(()=>validateWorkflowRecord(invalid),/Grocery stock fields/i);
+ assert.throws(()=>validateWorkflowRecord({...grocery,data:{...grocery.data,neededBy:'2026-02-30'}}),/date is invalid/i);
+});

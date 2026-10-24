@@ -85,3 +85,14 @@ Run the automated checks with `npm test`. The UI suite also renders all routes w
 4. Add an overnight/timed shift with commute, prep, recovery, and unpaid break. Enter statement wages, cash/card tips, tip-out, withholding, and Expected status; confirm it appears as expected only. Record actual received net pay and confirm exactly one linked Personal income transaction is created.
 5. Add a Studio prospect with a verified source URL and score. Confirm duplicate websites are blocked, low-score or contact-suppressed prospects cannot create follow-up tasks, and a qualified prospect produces one private linked task draft without sending anything.
 6. Verify manual ICS preview/import remains review-first. Live OAuth calendar/task sync, provider conflict review, safe provider disconnect, and closed-app notifications require provider credentials and backend infrastructure and are not covered by local UI acceptance.
+
+
+### Everyday administration and travel planning
+
+1. Save meals for different dates, add a prep task, and verify that only the linked task enters Day Director. Add meal ingredients to the grocery list and confirm duplicate active items are not copied.
+2. Add a grocery item with stock and a reorder threshold. Confirm low stock is called out, a shopping task is optional and idempotent, and marking the item bought removes it from the active list without deleting history.
+3. Add confirmed caregiving coverage and a Healthcare event. Confirm coverage and appointments become fixed planner commitments. Add healthcare/dental prep, transport, and follow-up tasks and verify the task links, due dates, and deduplication.
+4. Add a renewal or paperwork follow-up and verify the linked task enters Day Director. Attach travel time and a fallback plan to an appointment; preview the day and verify the travel buffer is fixed with the event.
+5. Add Freyja supplies with quantities, reorder points, costs, and a date. Confirm the record is private, low-stock state is visible, and an optional restock task is linked and dated.
+6. Add each named trip draft. Enter dates and category budgets; verify totals and the linked savings fund use only entered amounts. Update the fund amount and verify the savings gap changes. Add an astrocartography line/location supplied by the user, view prompts, and add one as an editable itinerary task. Confirm no live chart calculation, booking, or price claim is implied.
+7. Edit, trash, restore, export, and reimport new meal, grocery, care, pet, admin, and trip records. Test invalid dates, negative money/stock values, repeated task creation, and failed persistence.

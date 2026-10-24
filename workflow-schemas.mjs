@@ -1,6 +1,7 @@
 // Additive, versioned data contracts for executive work and income workflows.
 // Migrations never infer actual pay, confirmed shifts, or verified prospect data.
-const versions={shift:1,earnings:1,lead:1,studioOutreach:1,client:1,proposal:1,invoice:1};
+const versions={shift:1,earnings:1,lead:1,studioOutreach:1,client:1,proposal:1,invoice:1,mealPlan:1,grocery:1};
+const isISODate=value=>typeof value==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(value)&&!Number.isNaN(Date.parse(`${value}T12:00:00Z`))&&new Date(`${value}T12:00:00Z`).toISOString().slice(0,10)===value;
 export const workflowSchemaVersions=Object.freeze({...versions});
 
 export function migrateWorkflowRecord(input){
@@ -25,6 +26,17 @@ export function migrateWorkflowRecord(input){
   data.sourceUrl=typeof data.sourceUrl==='string'?data.sourceUrl:'';
   data.problemObserved=typeof data.problemObserved==='string'?data.problemObserved:'';
   if(data.score!==undefined&&(!Number.isFinite(Number(data.score))||Number(data.score)<0||Number(data.score)>10)){data.unvalidatedScore=data.score;delete data.score;}
+ }else if(input.type==='mealPlan'){
+  if(!['Breakfast','Lunch','Dinner','Snack'].includes(data.mealType))data.mealType='Dinner';
+  if(!Array.isArray(data.ingredients))data.ingredients=[];
+  data.ingredients=data.ingredients.filter(x=>typeof x==='string').slice(0,60);
+  if(!Number.isInteger(data.servings)||data.servings<1||data.servings>30)data.servings=1;
+  if(!Number.isInteger(data.prepMinutes)||data.prepMinutes<0||data.prepMinutes>480)data.prepMinutes=0;
+ }else if(input.type==='grocery'){
+  if(!['Produce','Protein','Dairy','Pantry','Household','Pet','Other'].includes(data.category))data.category='Other';
+  for(const field of ['quantity','unit','neededBy'])if(typeof data[field]!=='string')data[field]='';
+  for(const field of ['onHand','reorderAt'])if(data[field]!==null&&(!Number.isFinite(data[field])||data[field]<0))data[field]=null;
+  data.checked=data.checked===true;
  }else if(input.type==='studioOutreach'){
   data.sendApproved=false;
   data.optedOut=data.optedOut===true;
@@ -56,6 +68,9 @@ export function validateWorkflowRecord(r){
   if(d.score!==undefined&&(!Number.isFinite(Number(d.score))||Number(d.score)<0||Number(d.score)>10))throw Error('A lead fit score must be from 0 to 10.');
   if(d.contactVerified!==undefined&&typeof d.contactVerified!=='boolean'||d.suppressContact!==undefined&&typeof d.suppressContact!=='boolean')throw Error('Lead contact flags are invalid.');
  }
+ if(r.type==='mealPlan'&&(!['Breakfast','Lunch','Dinner','Snack'].includes(d.mealType)||!Array.isArray(d.ingredients)||d.ingredients.length>60||d.ingredients.some(x=>typeof x!=='string'||x.length>120)||!Number.isInteger(d.servings)||d.servings<1||d.servings>30||!Number.isInteger(d.prepMinutes)||d.prepMinutes<0||d.prepMinutes>480))throw Error('Meal plan fields are invalid.');
+ if(r.type==='grocery'&&(!['Produce','Protein','Dairy','Pantry','Household','Pet','Other'].includes(d.category)||typeof d.quantity!=='string'||d.quantity.length>80||typeof d.unit!=='string'||d.unit.length>40||typeof d.checked!=='boolean'||['onHand','reorderAt'].some(k=>d[k]!==null&&(!Number.isFinite(d[k])||d[k]<0))))throw Error('Grocery stock fields are invalid.');
+ if(r.type==='grocery'&&d.neededBy&&!isISODate(d.neededBy))throw Error('A grocery needed-by date is invalid.');
  if(r.type==='studioOutreach'&&(d.sendApproved!==false||typeof d.optedOut!=='boolean'||typeof d.bounced!=='boolean'))throw Error('Studio outreach must remain an unsent, reviewable draft.');
  return true;
 }

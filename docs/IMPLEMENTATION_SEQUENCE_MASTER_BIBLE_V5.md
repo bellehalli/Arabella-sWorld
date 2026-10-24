@@ -179,3 +179,12 @@ No release is complete until feature acceptance, security review, visual/accessi
 - Work operations now capture shift timing/breaks, commute and preparation, separate estimated wages from actual wage/tip statement details, and add income to Personal finance only when net pay is confirmed received. Studio prospect management adds score, website deduplication, contact holds, and idempotent private follow-up task drafts; it sends no outreach.
 - External provider OAuth, live task/calendar synchronization, closed-app push delivery, and a server-side automation worker remain unavailable until credentials, backend services, and provider authorization are configured. Manual ICS remains review-first.
 - Verification: full `npm test` passed 232/232. This is a development review build, not a production release.
+
+
+### Slice 11 — Everyday administration and travel planning — 2026-10-24
+
+- Everyday administration connects dated meal plans and ingredients to grocery records, low-stock supplies, confirmed caregiving coverage, healthcare/dental preparation and follow-up, renewals/paperwork, pet restocks, and transportation fallback plans. Dated next actions become linked tasks; confirmed coverage and saved travel buffers are visible to Day Director as fixed commitments.
+- Added travel drafts for a European Christmas market tour, Japan, China, and Indonesia. Dates and budgets start blank; category budgets use exact cents and link to Treasury savings funds. User-entered savings, dates, and spending determine progress—no destination costs are invented.
+- Astrocartography activity prompts require a user-entered planet line and location. The app presents reflective activity ideas and can save chosen ideas as editable itinerary tasks; it does not calculate a chart, predict outcomes, book travel, or fetch prices.
+- New typed meal and grocery records migrate additively, retain private classification, validate bounded fields and real calendar dates, and expose edit/delete/export routes. Regression coverage exercises grocery/restock lifecycle, linked Day Director tasks and commitments, trip budgets/funds, prompt review, and invalid input.
+- README inventory reports 47 routes and 76 typed record forms. Full `npm test` passes 243/243; changed-module syntax checks and `git diff --check` pass. This is a development review build, not a production release.
