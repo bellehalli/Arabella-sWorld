@@ -7,7 +7,7 @@
 3. Complete visual design and accessibility polish.
 4. Complete the broader automation phase.
 
-This sequence governs development on `codex/complete-bible-features`. The merged main branch remains the reference point. Work here is not a production release. No production deployment or user-data migration is part of these phases.
+This sequence governs feature development on `main`, the current reference branch. Merged work is not a production release. No production deployment or user-data migration is part of these phases.
 
 ## Starting point
 

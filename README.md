@@ -59,4 +59,4 @@ No database, hosting plan, external account, billing setting, or production depl
 
 Repository: https://github.com/bellehalli/Arabella-sWorld
 
-Step 1 Capture & Continuity is merged to `main`. Step 2 Planning is in progress on a feature branch and is not a production release.
+Step 1 Capture & Continuity and Step 2 Planning are merged to `main`. This is not a production release.
