@@ -75,3 +75,13 @@ Run the automated checks with `npm test`. The UI suite also renders all routes w
 1. Simulate storage failure during a save. Confirm an error is visible, no successful save is claimed, and the editor retains the entered text.
 2. Submit invalid dates, malformed CSV rows, an over-budget Studio milestone plan, and duplicate checklist entries. Confirm each shows a useful error and writes nothing.
 3. Repeat the date/time tests around a daylight-saving gap and fold. Confirm nonexistent times are rejected and repeated times require an explicit choice.
+
+
+### Automation, approvals, reminders, work income, and Studio prospects
+
+1. Create an enabled rule for a supported record-created, record-updated, status-changed, date-arrived, or scheduled-review trigger. Confirm preview makes no record changes, duplicate polling does not duplicate proposals, pause-all stops new proposals, and generated actions remain pending in Approval Inbox.
+2. Edit a proposal, snooze it, undo the snooze, dismiss it, and approve another. Confirm each decision is logged. Cause a failed approval and confirm retry count/backoff and the visible error are bounded.
+3. Save quiet hours, lead time, and Calendar timezone. Opt in to browser notifications. Confirm a reminder is suppressed during quiet hours and delivered only while the app remains open; closed-app delivery is not claimed.
+4. Add an overnight/timed shift with commute, prep, recovery, and unpaid break. Enter statement wages, cash/card tips, tip-out, withholding, and Expected status; confirm it appears as expected only. Record actual received net pay and confirm exactly one linked Personal income transaction is created.
+5. Add a Studio prospect with a verified source URL and score. Confirm duplicate websites are blocked, low-score or contact-suppressed prospects cannot create follow-up tasks, and a qualified prospect produces one private linked task draft without sending anything.
+6. Verify manual ICS preview/import remains review-first. Live OAuth calendar/task sync, provider conflict review, safe provider disconnect, and closed-app notifications require provider credentials and backend infrastructure and are not covered by local UI acceptance.

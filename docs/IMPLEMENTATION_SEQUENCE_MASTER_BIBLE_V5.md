@@ -169,3 +169,13 @@ No release is complete until feature acceptance, security review, visual/accessi
 - Care, relationships, pets, experiences, Grimoire, and Dream Estate already had route-level implementations in the main source. The acceptance review confirms the encrypted local care vault, opt-in in-app occasions, pet schedules, visited/wished ledger, manual media source/progress, custom/manual/reversed tarot entries, symbol search, keyboard route map, and plain-dashboard escape.
 - Statement review now suggests exact-amount/direction candidates within a configurable bounded posting-date window. Unique likely matches can be explicitly reconciled; ambiguous rows stay unchecked; unmatched selected rows are imported and marked reconciled. This is manual CSV reconciliation, not a live bank connection.
 - Verification: career helpers and statement reconciliation engines have focused tests; Career and statement flows have UI acceptance coverage. Verification: full `npm test` passed 215/215; 46 routes and 74 typed record forms are generated from the current catalog. Changed modules pass `node --check` and `git diff --check`.
+
+
+### Slice 10 — Automation, approvals, reminders, work and income — 2026-10-24
+
+- Added versioned and additive workflow contracts for shifts, pay statements, Studio leads, outreach, clients, proposals, and invoices. Older records are migrated without inventing confirmed shifts, actual earnings, verified contacts, or sent outreach.
+- Automation rules now include record-created, record-updated, true status-change, date-arrived, and scheduled-review triggers. Local runs deduplicate proposals, avoid feedback loops from automation-created records, honor pause-all, per-rule caps, quiet hours, bounded retries, and readable execution history.
+- Added a central Approval Inbox for automation proposals with edit, approve, snooze, dismiss, undo, and retry paths. Browser reminder preferences now include lead time and quiet hours in the saved calendar timezone; delivery remains opt-in and app-open only.
+- Work operations now capture shift timing/breaks, commute and preparation, separate estimated wages from actual wage/tip statement details, and add income to Personal finance only when net pay is confirmed received. Studio prospect management adds score, website deduplication, contact holds, and idempotent private follow-up task drafts; it sends no outreach.
+- External provider OAuth, live task/calendar synchronization, closed-app push delivery, and a server-side automation worker remain unavailable until credentials, backend services, and provider authorization are configured. Manual ICS remains review-first.
+- Verification: full `npm test` passed 232/232. This is a development review build, not a production release.
