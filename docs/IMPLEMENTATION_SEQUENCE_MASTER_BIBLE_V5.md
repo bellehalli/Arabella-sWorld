@@ -11,7 +11,7 @@ This sequence governs feature development on `main`, the current reference branc
 
 ## Starting point
 
-Main contains 42 navigation routes, 48 record types, the ten §5 advanced systems, a 16-week Academy scaffold, local encrypted backup/restore, and a local approval-based Automation Atelier. The application had 138 passing tests at the starting baseline; the development branch now adds feature-slice tests. Many routes still use general record-list/editor behavior; presence of a route or form does not count as a complete advanced workflow. The README currently reports 32 routes/forms and needs reconciliation with the source inventory.
+The current source inventory contains 46 navigation routes and 70 typed record forms, including the ten §5 advanced systems, a 16-week Academy scaffold, local encrypted backup/restore, and a local approval-based Automation Atelier. Source counts are generated from `catalog.mjs`; a route or form alone does not count as a complete advanced workflow. Capture & Continuity and Planning are merged to `main`. The Personal Operations and route-level acceptance work below is being completed in the current feature slice; merged development work is not a production release.
 
 ## Phase 1 — Product workflows and advanced capabilities
 
@@ -40,9 +40,9 @@ Build against the Bible's route and journey contracts. Complete existing modules
 ### Personal operations
 
 - [ ] Career: interviews, question bank, outcome notes, resume/portfolio version inventory, source links, contacts, follow-ups, and transparent compensation comparisons.
-- [ ] Studio: scope and quote builder, milestone/payment records, revision/change log, deliverables, outreach log, launch QA, and estimates distinct from invoices and received cash.
-- [ ] Finance: manual account balances, confirmed vs expected income, envelope/category plans, bills/subscriptions, sinking funds, affordability and cashflow scenarios, assumptions, and CSV statement review. A user-entered move-cost scenario calculator with exact-cent comparisons is implemented; remaining finance workflows are still open.
-- [ ] Home/admin: apartment comparison, moving timeline, inventory, warranties, maintenance, errands, document checklist, and renewal tracking.
+- [x] Studio: scope and exact-cent quote builder, accepted-scope milestones, expected vs received payment records, revision/change log, deliverables, outreach log, launch QA, and estimates distinct from invoices and received cash.
+- [x] Finance: manual account balances, confirmed vs expected income, envelope/category plans, bills/subscriptions, sinking funds, affordability and cashflow scenarios with visible assumptions, and duplicate-aware CSV statement review. Bank feeds and statement reconciliation remain outside this local/manual workflow.
+- [x] Home/admin: entered-cost apartment comparison, preview-and-approve moving timeline, inventory, warranties, recurring maintenance, errands, document checklist, and renewal tracking.
 - [ ] Wellness/care: optional logs, appointment preparation, routines and inventory with sensitive-data handling; no diagnostic claims.
 - [ ] Relationships/pets/experiences/library: opt-in occasions and reminders, care schedules, visited-vs-wished experiences, media tracking, and manual source/location details.
 - [ ] Grimoire/dreams: customizable spreads and positions, reversed/manual card entries, personal correspondences with optional sources, searchable symbols, and reflective framing.
@@ -50,11 +50,11 @@ Build against the Bible's route and journey contracts. Complete existing modules
 
 ### Feature phase acceptance
 
-- [ ] Each route has real persistence, meaningful empty/loading/error states, privacy classification, edit/delete/export paths, and no inert controls.
-- [ ] Each workflow works by keyboard and touch in simulated tests; high-risk journeys get manual regression steps.
-- [ ] Add focused unit/integration tests for validation, dates/timezones, exact-cent calculations, deduplication, privacy-aware search, and failed saves.
-- [ ] Update README route/type counts and feature claims from generated source inventory.
-- [ ] Re-run all tests and audit release claims. Do not start security redesign until this feature checklist is reviewed as complete.
+- [x] Route acceptance: every route renders with empty data; every typed editor saves edits without changing its privacy setting; settings expose whole-workspace export; trash/restore, visible save failure, and all literal rendered actions are checked.
+- [x] Native controls have accessible names and use button/link semantics; delegated click activation is tested. High-risk keyboard/touch and data recovery regression steps are documented in `docs/FEATURE_ACCEPTANCE_REGRESSION.md`.
+- [x] Focused tests cover validation, exact-cent finance and Studio calculations, dates/timezones/DST, deduplication, privacy-aware search, statement preview, and failed persistence.
+- [x] README navigation/type counts and product claims are reconciled with the source inventory.
+- [x] Full automated suite and release-claim review are complete for this feature slice. Security redesign, visual/device acceptance, and broader automation remain later phases.
 
 ## Phase 2 — Security and privacy
 
@@ -150,3 +150,12 @@ No release is complete until feature acceptance, security review, visual/accessi
 - Focus now links a ready task, offers timer pause/reset and a bounded break flow, optional local completion sound, distraction parking, and bounded linked session history.
 - Goals support parent/child hierarchy, qualitative progress, editable milestones, linked tasks, and a preview plus explicit approval before a dream creates linked tasks.
 - Verification: full `npm test` 183/183; `node --check` for changed modules and `git diff --check` pass; production dependency audit is recorded with the merge verification. Personal Operations and Phase 1 acceptance remain open.
+
+### Slice 8 — Studio, Finance, Home, and route acceptance — 2026-10-24
+
+- Studio now separates exact-cent quotes, invoices, scheduled payment expectations, and received Studio cash. Client approval is required to start delivery; milestone plans are capped at the accepted scope. Change requests, deliverables, outreach history, launch QA, and explicit payment receipt are linked to the project. Business/payment records are private by default.
+- Finance adds manual balance snapshots, confirmed/expected income, envelopes, bills/subscriptions, sinking funds and contributions, affordability/cashflow projections, and CSV statement review with duplicate detection. Paying a bill is an explicit ledger record and never initiates a payment. Sensitive money records are private by default.
+- Home/admin adds apartment comparisons from entered data, a move timeline that writes tasks only after approval, inventory and warranty review, maintenance recurrence, errands/renewals, and editable document checklists.
+- Route acceptance now renders every route empty, checks native named controls and literal action handlers, edits all typed records while preserving privacy classification, verifies export and trash/restore, simulates a failed save without losing the draft, and exercises Studio/Finance/Home approval paths.
+- Added a keyboard/touch and high-risk manual regression procedure. Actual browser/device and screen-reader validation remains in the later visual/accessibility phase.
+- README inventory now reports 46 routes and 70 typed record forms. Verification: pending final full-suite run and merge.

@@ -4,13 +4,16 @@ A blush/lavender personal life workspace with heart controls, illustrated readin
 
 ## Working in this build
 
-- 45 navigable spaces and 48 typed record forms, common IDs, labels, favorites, links/backlinks, ten previous edit snapshots.
+- 46 navigable spaces and 70 typed record forms, common IDs, labels, favorites, links/backlinks, ten previous edit snapshots. Counts are generated from `catalog.mjs` (`groups` and `types`).
 - Journals, diary, mixed moods/intensities/custom feelings, dreams, grimoire rituals and readings.
 - Original 78-card tarot reference, random reflective three-card spreads, saved reading drafts.
 - Task workflows include linked subtasks and prerequisites, next actions, blockers, contexts and locations, plus fixed, before, flexible-window and someday due dates. Completing a task waits for its prerequisites.
 - Day/week/month calendar planning with saved timezone, daylight-saving gap/fold choices, overlap review, manual ICS preview/import and timezone-correct ICS export. Recurrence rules can be paused, skipped once, and approved per occurrence.
 - Focus sessions link to ready tasks, offer break flow, a local opt-in sound, distraction parking and bounded session history. Habit templates have weekly targets, retained logs and pause/resume controls. Weekly reset and minimum-viable-day views surface capacity warnings without silently moving work.
 - Career and studio pipelines, gross compensation calculator, learning, home, beauty, wardrobe, people, pet care, travel, memories, wishes, reviews, seasons and decisions.
+- Studio delivery desk with exact-cent estimate line items, client approval, accepted-scope milestones, expected and received payments, change log, deliverables, outreach history and launch QA. Estimates, invoices and received cash are separate records.
+- Finance workflows for manual account snapshots, confirmed/expected income, category envelopes, bills and subscriptions, sinking funds, cashflow and affordability scenarios, and duplicate-aware CSV statement review. No account is connected and no payment is sent.
+- Home administration for entered-cost apartment comparisons, approved moving timelines, inventory and warranties, recurring maintenance, errands, renewals and document checklists.
 - Manually enabled/run application-follow-up recipe with preview, per-record deduplication and run history. No outward actions.
 - Draft recovery, same-record conflict detection, save failure retention, trash/undo, JSON merge import, CSV/Markdown/ICS exports.
 - Encrypted full-workspace backup export and explicit whole-workspace restore; ordinary JSON export remains available for readable portability.
@@ -19,6 +22,7 @@ A blush/lavender personal life workspace with heart controls, illustrated readin
 - Continuity tools include user-owned collections, reusable record templates, validated custom fields, a browsable relationship graph, duplicate review, guided private writing, and dated Future Self letter reveals.
 - Goal hierarchy, qualitative progress, linked milestones and an explicit preview/approval flow for converting a dream into linked tasks.
 - Money scenarios compare user-entered monthly assumptions and one-time move costs with exact-cent calculations; estimates are saved explicitly.
+- Route acceptance coverage exercises empty routes, typed record edits, privacy preservation, native named controls, export, failed saves, and Studio/Finance/Home approval flows.
 - Compressed optional photo cards in selected modules; all records remain browser-local until cloud is configured.
 
 These are implemented local workflows at different levels of depth. The broader Master Bible vision is not yet complete; the staged feature, security, visual/accessibility, and automation sequence is tracked in `docs/IMPLEMENTATION_SEQUENCE_MASTER_BIBLE_V5.md`.
@@ -51,7 +55,7 @@ A concealed search preview is not a device lock or encryption. Main workspace re
 
 ## Still outside this milestone
 
-Live cloud provisioning/owner setup and real cross-device tests; Vercel Git integration; live browser visual/accessibility testing; fully normalized cloud schema; full offline service worker; attachments vault; drag/resize calendar blocks and external calendar synchronization; rich-text editor; full custom workflow builder; notification infrastructure; finance and statement reconciliation; remaining career, studio, home/admin, wellness, relationship, library and dream-estate journeys; bank integrations; sophisticated wardrobe/room canvases; full v5 automation engine.
+Live cloud provisioning/owner setup and real cross-device tests; Vercel Git integration; live browser/device visual and accessibility testing; fully normalized cloud schema; full offline service worker; attachments vault; drag/resize calendar blocks and external calendar synchronization; rich-text editor; full custom workflow builder; notification infrastructure; bank integrations and statement reconciliation; remaining Career workflows (question bank, resume/portfolio inventory, sources/contacts, follow-up tasks and compensation comparisons); remaining wellness/care, relationships/pets/experiences/library and Dream Estate journeys; sophisticated wardrobe/room canvases; full v5 automation engine.
 
 No database, hosting plan, external account, billing setting, or production deployment is changed automatically by this source.
 
