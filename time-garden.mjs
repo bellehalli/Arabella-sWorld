@@ -26,4 +26,4 @@ export function decideRecurring(proposal,decision,records){
  return {decision:{type:'scheduleDecision',title:proposal.title,date:proposal.date,status:decision==='approve'?'Done':'Closed',data:{proposalId:proposal.proposalId,ruleId:proposal.ruleId,decision,actionType:kind}},item:decision==='approve'?{type:kind,title:proposal.title,date:proposal.date,status:'Next',data:{sourceProposalId:proposal.proposalId}}:null};
 }
 export const actionTypes=['event','task','note','journal','expense','person','lead','assignment','experiencePlan'];
-export function heartAction(type,title,date){if(!actionTypes.includes(type))throw Error('Unsupported capture type');if(!String(title||'').trim())throw Error('A title is required');if(!dated(date))throw Error('Invalid date');return {type,title:String(title).trim().slice(0,240),date,status:'Next'};}
+export function heartAction(type,title,date=''){if(!actionTypes.includes(type))throw Error('Unsupported capture type');if(!String(title||'').trim())throw Error('A title is required');if(date&&!dated(date))throw Error('Invalid date');return {type,title:String(title).trim().slice(0,240),date:date||'',status:'Next'};}
