@@ -8,14 +8,6 @@ export function interviewPrepLog({application,questions='',evidence='',questions
 }
 
 const validDate=value=>/^\d{4}-\d{2}-\d{2}$/.test(String(value||''))&&!Number.isNaN(new Date(`${value}T12:00:00Z`).getTime())&&new Date(`${value}T12:00:00Z`).toISOString().slice(0,10)===value;
-export const careerQuestionPrompts=Object.freeze([
- {category:'Story & motivation',prompt:'What kind of work brings out your strongest contribution? Give a concrete example.'},
- {category:'Problem solving',prompt:'Describe a difficult problem, how you approached it, and what changed because of your work.'},
- {category:'Collaboration',prompt:'Tell me about a time you navigated disagreement or unclear ownership.'},
- {category:'Learning',prompt:'What feedback changed how you work? What did you do with it?'},
- {category:'Role fit',prompt:'Which parts of this role fit your strengths, and what would you want to learn first?'},
-]);
-
 export function validateCareerAsset({title,kind='Resume',version='',date='',url='',notes=''}){
  const name=String(title||'').trim(),allowed=['Resume','Portfolio','Work sample','Certificate','Other'];
  if(!name||name.length>160)throw Error('Give this career asset a name under 160 characters.');

@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {interviewPrepLog,careerQuestionPrompts,validateCareerAsset,dueCareerFollowups,compareCompensationOffers} from '../career-workflows.mjs';
+import {interviewPrepLog,validateCareerAsset,dueCareerFollowups,compareCompensationOffers} from '../career-workflows.mjs';
 import {record} from '../core.mjs';
 
 test('interview preparation creates a linked, structured private note payload',()=>{
@@ -22,8 +22,7 @@ test('interview preparation rejects inactive applications, unsupported outcomes,
  assert.throws(()=>interviewPrepLog({application,questions:'x'.repeat(5001)}),/5,000 characters/);
 });
 
-test('career question prompts, versioned assets, and due follow-ups are validated and dated',()=>{
- assert.ok(careerQuestionPrompts.length>=5);
+test('versioned career assets and due follow-ups are validated and dated',()=>{
  assert.deepEqual(validateCareerAsset({title:'Portfolio · Spring',kind:'Portfolio',version:'v3',date:'2026-10-24',url:'https://example.test/work'}).version,'v3');
  assert.throws(()=>validateCareerAsset({title:'Bad link',url:'javascript:alert(1)'}),/HTTP or HTTPS/i);
  const rows=[{id:'a',type:'application',title:'Role A',status:'Interview',deletedAt:null,data:{followup:'2026-10-23'}},{id:'b',type:'application',title:'Role B',status:'Closed',deletedAt:null,data:{followup:'2026-10-23'}}];

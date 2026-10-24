@@ -44,7 +44,7 @@ Run the automated checks with `npm test`. The UI suite also renders all routes w
 
 ### Career preparation and offer review
 
-1. Save a reusable question, resume/portfolio version, career contact, and source. Confirm private records remain private after editing and survive export/restore.
+1. Save a resume/portfolio version, career contact, and source. Confirm private records remain private after editing and survive export/restore.
 2. Save an interview prep note linked to an active application. Confirm it is private and the follow-up draft is not sent.
 3. Add a due follow-up date to an application. Create the linked task twice and confirm only one task exists; verify its date and application backlink.
 4. Compare salary and hourly examples with paid and unpaid weeks. Confirm gross totals use entered assumptions and benefit notes are not assigned a dollar value.

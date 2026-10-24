@@ -39,7 +39,7 @@ Build against the Bible's route and journey contracts. Complete existing modules
 
 ### Personal operations
 
-- [x] Career: interview preparation and outcomes, reusable question bank, resume/portfolio version inventory, source links, contacts, idempotent dated follow-up tasks, and transparent gross compensation comparisons with visible hours, paid/unpaid weeks, and unmonetized benefit notes.
+- [x] Career: application-linked interview preparation and outcomes, resume/portfolio version inventory, source links, contacts, idempotent dated follow-up tasks, and transparent gross compensation comparisons with visible hours, paid/unpaid weeks, and unmonetized benefit notes.
 - [x] Studio: scope and exact-cent quote builder, accepted-scope milestones, expected vs received payment records, revision/change log, deliverables, outreach log, launch QA, and estimates distinct from invoices and received cash.
 - [x] Finance: manual account balances, confirmed vs expected income, envelope/category plans, bills/subscriptions, sinking funds, affordability and cashflow scenarios with visible assumptions, duplicate-aware CSV review, and manual reconciliation suggestions. Reconciliation requires exact amount/direction and a bounded posting-date window; ambiguous candidates stay unchecked. Live bank feeds remain outside this local/manual workflow.
 - [x] Home/admin: entered-cost apartment comparison, preview-and-approve moving timeline, inventory, warranties, recurring maintenance, errands, document checklist, and renewal tracking.
@@ -120,7 +120,7 @@ No release is complete until feature acceptance, security review, visual/accessi
 - Validation rejects inactive applications, unsupported outcomes, malformed dates, and oversized fields.
 - Preparation records are marked sensitive, hidden from global search text previews by default, and retained locally; no message is sent.
 - Verification: full suite passes 148/148; `npm audit --omit=dev` reports zero vulnerabilities; syntax and whitespace checks pass.
-- Remaining Career work: reusable question bank, resume/portfolio version inventory, sources and contacts, follow-up task workflow, and transparent compensation comparisons.
+- Remaining Career work: resume/portfolio version inventory, sources and contacts, follow-up task workflow, and transparent compensation comparisons.
 
 
 ### Slice 5 — Capture and continuity — 2026-10-24
@@ -163,7 +163,7 @@ No release is complete until feature acceptance, security review, visual/accessi
 
 ### Slice 9 — Career, personal care and statement reconciliation — 2026-10-24
 
-- Career now includes a reusable starter question bank with user-owned saved prompts, private typed resume/portfolio/work-sample versions, private source and contact records, and one idempotent follow-up task per due application. Nothing is sent.
+- Career now includes application-specific interview prep, private typed resume/portfolio/work-sample versions, private source and contact records, and one idempotent follow-up task per due application. Nothing is sent.
 - The compensation worksheet compares two user-entered offers using annual gross pay and effective gross pay per working hour. It surfaces paid/unpaid weeks and keeps benefits as context rather than assigning guessed dollar values.
 - Care, relationships, pets, experiences, Grimoire, and Dream Estate already had route-level implementations in the main source. The acceptance review confirms the encrypted local care vault, opt-in in-app occasions, pet schedules, visited/wished ledger, manual media source/progress, custom/manual/reversed tarot entries, symbol search, keyboard route map, and plain-dashboard escape.
 - Statement review now suggests exact-amount/direction candidates within a configurable bounded posting-date window. Unique likely matches can be explicitly reconciled; ambiguous rows stay unchecked; unmatched selected rows are imported and marked reconciled. This is manual CSV reconciliation, not a live bank connection.
