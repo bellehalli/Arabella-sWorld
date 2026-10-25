@@ -4,7 +4,7 @@ export async function dryRunRestore(archive){
  const verified=await verifyBackup(archive);
  const data=new Map(),storage={getItem:k=>data.get(k)||null,setItem:(k,v)=>data.set(k,String(v))};
  const sandbox=new Store(storage);
- await sandbox.import(verified.state);
+ await sandbox.restoreBackup(verified.state);
  const restored=validate(sandbox.read()),before=inventory(verified.state),after=inventory(restored);
  const recordMatch=restored.records.length===verified.state.records.length&&restored.records.every(r=>JSON.stringify(r)===JSON.stringify(verified.state.records.find(x=>x.id===r.id)));
  const links=inspectLinks(restored);
