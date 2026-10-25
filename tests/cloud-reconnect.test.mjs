@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {CloudStore} from '../cloud.mjs';
+import {openCloudDraftStorage} from '../cloud-draft-storage.mjs';
 import {blank,record} from '../core.mjs';
 
 function sharedBackend(initial=blank()){
@@ -11,7 +12,7 @@ function sharedBackend(initial=blank()){
  };
  return {backend,client};
 }
-const memoryStorage=()=>{const values=new Map();return {getItem:key=>values.get(key)??null,setItem:(key,value)=>values.set(key,value)};};
+const memoryStorage=()=>{const values=new Map();return {get length(){return values.size;},key:index=>[...values.keys()][index]??null,getItem:key=>values.get(key)??null,setItem:(key,value)=>values.set(key,value),removeItem:key=>values.delete(key)};};
 const makeStore=(client,storage)=>new CloudStore(client,{id:'123e4567-e89b-12d3-a456-426614174000'},blank(),storage);
 
 test('two signed-in devices can save separate records into the shared workspace',async()=>{
@@ -40,6 +41,19 @@ test('an offline editor save persists in the reconnect queue and syncs on reconn
   assert.equal(store.pending.length,1);assert.match(storage.getItem(store.queueKey),/Saved offline/);
   backend.offline=false;Object.defineProperty(globalThis,'navigator',{configurable:true,value:{onLine:true}});
   await store.syncPending();assert.equal(store.pending.length,0);assert.equal(backend.state.records[0].title,'Saved offline');
+ }finally{if(original===undefined)delete globalThis.navigator;else Object.defineProperty(globalThis,'navigator',{configurable:true,value:original});}
+});
+
+test('cloud reconnect queue is encrypted at rest and remains available after reopening',async()=>{
+ const {backend,client}=sharedBackend(),raw=memoryStorage(),owner='123e4567-e89b-12d3-a456-426614174000',key=await crypto.subtle.generateKey({name:'AES-GCM',length:256},false,['encrypt','decrypt']),keyProvider=async()=>key,protectedStorage=await openCloudDraftStorage(raw,owner,{keyProvider}),store=makeStore(client,protectedStorage),original=globalThis.navigator;
+ Object.defineProperty(globalThis,'navigator',{configurable:true,value:{onLine:false}});
+ try{
+  backend.offline=true;await store.put(record('note',{title:'private reconnect words'}),null);
+  assert.doesNotMatch(raw.getItem(store.queueKey),/private reconnect words/);
+  const reopened=await openCloudDraftStorage(raw,owner,{keyProvider}),restored=makeStore(client,reopened);
+  assert.equal(restored.pending.length,1);assert.equal(restored.pending[0].record.title,'private reconnect words');
+  backend.offline=false;Object.defineProperty(globalThis,'navigator',{configurable:true,value:{onLine:true}});
+  await restored.syncPending();assert.equal(restored.pending.length,0);assert.equal(backend.state.records[0].title,'private reconnect words');
  }finally{if(original===undefined)delete globalThis.navigator;else Object.defineProperty(globalThis,'navigator',{configurable:true,value:original});}
 });
 
