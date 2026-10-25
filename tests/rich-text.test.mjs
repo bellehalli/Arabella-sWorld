@@ -16,3 +16,13 @@ test('plain writing converts to escaped paragraphs before entering the rich edit
  const html=richHtmlFromPlainText('<img src=x onerror=bad()>\n\nSecond paragraph');
  assert.doesNotMatch(html,/<img/);assert.match(html,/&lt;img/);assert.equal(html.match(/<p>/g).length,2);
 });
+
+
+test('sanitizer fallback escapes all markup when DOMParser is unavailable',()=>{
+ const original=globalThis.DOMParser;delete globalThis.DOMParser;
+ try{
+  const clean=sanitizeRichHtml('hello <<script>steal()</script><img src=x onerror=steal()> & goodbye');
+  assert.equal(clean,'hello &lt;&lt;script&gt;steal()&lt;/script&gt;&lt;img src=x onerror=steal()&gt; &amp; goodbye');
+  assert.doesNotMatch(clean,/<(?:script|img)\\b/i);
+ }finally{if(original!==undefined)globalThis.DOMParser=original;}
+});
