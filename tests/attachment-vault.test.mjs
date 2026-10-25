@@ -25,7 +25,7 @@ test('attachment validation checks bytes for each allowed file type',async()=>{
   ['notes.txt','text/plain',enc.encode('hello')],
   ['memo.docx','application/vnd.openxmlformats-officedocument.wordprocessingml.document',Uint8Array.of(0x50,0x4b,0x03,0x04)]
  ];
- for(const [name,type,prefix] of samples){const bytes=new Uint8Array(20);bytes.set(prefix);const file={name,type,size:bytes.byteLength,arrayBuffer:async()=>bytes.buffer};assert.equal((await validateAttachmentFile(file)).mime_type,type);}
+ for(const [name,type,prefix] of samples){const bytes=new Uint8Array(20);bytes.set(prefix);const file={name,type,size:bytes.byteLength,arrayBuffer:async()=>bytes.buffer};assert.equal((await validateAttachmentFile(file)).mime_type,type,`valid signature should pass for ${name}`);}
 });
 test('attachment validation rejects mislabeled file bytes and mismatched sizes',async()=>{
  const wrong=new Uint8Array(20);wrong.set(new TextEncoder().encode('<html>'));
