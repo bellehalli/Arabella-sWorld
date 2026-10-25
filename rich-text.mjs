@@ -1,7 +1,7 @@
 const ALLOWED = new Set(['P','BR','STRONG','B','EM','I','U','UL','OL','LI','BLOCKQUOTE','A']);
 
 export function sanitizeRichHtml(input) {
-  if (typeof DOMParser === 'undefined') return String(input ?? '').replace(/<[^>]*>/g, '');
+  if (typeof DOMParser === 'undefined') return escapeHtml(String(input ?? ''));
   const doc = new DOMParser().parseFromString(String(input ?? ''), 'text/html');
   const clean = node => {
     for (const child of [...node.childNodes]) {
