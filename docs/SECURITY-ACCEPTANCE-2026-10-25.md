@@ -48,3 +48,15 @@
 
 - `node --check` passed for all `.mjs` files and `api/*.js` files in the bundle.
 - `npm test` passed all 289 tests (0 failed). The 20 focused security tests also passed. All `.mjs` files and `api/*.js` files passed `node --check`. A Node-specific optional `unref()` was added to the idle timer after the first full-suite run showed that the browser timeout kept Node alive after tests; this does not change browser timer behavior.
+
+
+## Current main and security-fix candidate — 2026-10-25
+
+- Production sign-in is active and the owner confirmed that the browser keeps the session after reopening. The cloud workspace is not end-to-end encrypted.
+- The owner reports successful staging owner/non-owner/anonymous authorization and attachment lifecycle checks. These were not independently repeated during this review.
+- Vercel project inspection previously reported SSO protection across environments. An external logged-out denial response was not independently checked.
+- GitHub currently reports this repository as public. Change repository visibility to private to meet the personal-only source requirement; existing clones and caches cannot be recalled by a visibility change.
+- This security branch encrypts cloud-mode editor drafts and offline reconnect queue entries in browser storage with AES-GCM, using an account-scoped non-exportable WebCrypto key persisted in IndexedDB. Existing plaintext drafts are migrated and verified. Unreadable drafts are preserved and reported without blocking access to saved cloud pages. The saved sign-in does not require a new passphrase. This change is not active in production until merged and deployed, and it does not defend against same-origin script execution or a compromised browser profile.
+- Cloud draft encryption requires IndexedDB and fails closed if that key store is unavailable. Draft writes are asynchronous; wait for the editor to report the saved state before closing the page.
+- The DOMParser-absent rich-text fallback escapes input. Re-run CodeQL against the merged revision to confirm the alert closes.
+- The automated Codex Security Cloud scan was denied for this workspace. Repository searches found no common Supabase service-role, AWS access-key, Supabase secret-key, or JWT markers; a full history and entropy-based scan remains unperformed.
