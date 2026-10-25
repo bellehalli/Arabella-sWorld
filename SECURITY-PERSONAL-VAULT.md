@@ -101,3 +101,16 @@ F. Obtain explicit production go/no-go approval.
 - Hosted Preview follow-up: a draft security PR and isolated Vercel Preview now exist on `security-review-preview`. Its staging URL is scoped to that Preview branch; `/api/config` correctly fails closed (503) until the staging publishable key is added. The new Preview headers were checked, its 53-module JS graph had no high-confidence secret-pattern matches, and no runtime logs were found in the checked window. Login and data-path acceptance await the Preview publishable key.
 
 - The current security-review Preview is READY on branch `security-review-preview` (draft PR #25). Vercel environment inspection showed the existing Supabase variables are production-only; the staging URL is now scoped to this Preview branch. The staging publishable key still needs to be added to Preview before live login and data-path acceptance.
+
+
+## Current review correction — 2026-10-25
+
+This correction supersedes older deployment and data-path statements above where they conflict.
+
+- The owner reports that the staging authorization and attachment acceptance scripts passed. These are owner-reported results and were not rerun during this source review.
+- Production Supabase sign-in is active, and the owner confirmed that sign-in persists in the browser. Earlier Vercel project inspection reported SSO protection across deployment environments; an independent logged-out network denial check was not available in this review.
+- GitHub currently reports the repository as public. Make it private in GitHub repository settings to match the owner's private-source requirement. Changing visibility does not revoke copies already cloned or cached.
+- Cloud workspace records and attachment bytes are not end-to-end encrypted. This security branch adds AES-GCM encryption for account-scoped browser drafts and reconnect queues using a non-exportable WebCrypto key stored in IndexedDB. It does not require a new passphrase, and it does not protect against same-origin script execution or a compromised browser profile. Unreadable drafts remain preserved and reported without blocking saved cloud pages. This protection applies only after the branch is merged and deployed.
+- Cloud draft encryption requires IndexedDB; cloud startup fails closed if the browser key store is unavailable. Draft writes are asynchronous; wait for the editor to show the saved state before closing the page.
+- The rich-text fallback escapes all input when DOMParser is unavailable. The normal browser allowlist sanitizer remains in place. Re-run CodeQL against the merged commit to confirm alert status.
+- The automated Codex Security Cloud scan was unavailable to this workspace. Current source search found no matches for common service-role, Supabase secret, AWS access-key, or JWT markers; no complete history or entropy-based secret scan was run.
