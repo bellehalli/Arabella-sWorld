@@ -1,17 +1,56 @@
-# Staging handoff · October 19, 2026
+# Staging handoff · October 24, 2026
 
-Preview: https://belle-dreamhub-lcw648bkm-belle-halli.vercel.app
-Vercel deployment: dpl_2WnToqDrRTn64sXTfeasLSUwrCZu
-Project: prj_VUvRulJDA2hNxQNtt0ZNUVhHoyTA (belle-dreamhub)
-Environment: preview (API target null); no production alias assigned.
-Status: READY. Document, app.mjs, style.css and api/config return HTTP 200. Configuration returns enabled=false, confirming no cloud credentials are provisioned.
+## Environment boundary
 
-Source is being published to https://github.com/bellehalli/Arabella-sWorld on the `dreamhub-v2` review branch. The existing Vercel project still needs its Git integration connected.
+Use only the separate Supabase project **Arabella’s World Staging**. The existing Arabella’s World project is production and must not be used for these steps. The staging scripts reject the known production project ref and accept only an HTTPS Supabase URL plus a modern `sb_publishable_` key. Never use a secret or service-role key in Terminal.
 
-Validation: 24 logic and simulated-DOM tests pass. Live desktop/mobile visual, screen-reader, and real managed-auth/database tests remain pending. In this managed runtime, the supported browser QA skill is unavailable; no preview server or alternate browser driver was installed or launched.
+## Completed staging check
 
-Deployment Protection was retained. Vercel may request the owner's existing Vercel sign-in to open the preview. Do not disable protection to make it publicly accessible.
+The owner reports that `database/001_private_sync.sql` was applied, the invited owner row was inserted, and the owner/non-owner/anonymous smoke test passed from a Mac Terminal on October 24, 2026. The reported output was:
 
-32 navigable spaces use 32 typed record models. Cloud authentication, invited-owner restriction, RLS setup and atomic version-checked synchronization are implemented as a configurable adapter/migration, but NOT activated or verified against a real database. The full v5 blueprint has additional future features listed in README.md. This is a review milestone, not an assertion of full v5 completion.
+> PASS staging owner, non-owner, anonymous RLS and RPC checks; state was not modified.
 
-No subscription, provider account, paid AI call, production migration or financial action was enabled. The previous production deployment remains dpl_F6P1HvE2jzb83KBtwJJtWXXGFM9v and its alias remains https://belle-dreamhub.vercel.app.
+This confirms the `dreamhub_owners`, `dreamhub_state`, and `dreamhub_save` authorization checks passed for the tested staging project. It does not test attachment storage or the attachment page.
+
+## Attachment vault staging steps
+
+1. In the **Arabella’s World Staging** Supabase SQL Editor, run `database/002_private_attachments.sql` after `001_private_sync.sql`. It creates the private `dreamhub-attachments` bucket, owner-scoped metadata table, and Storage RLS policies. Do not run it in production.
+2. From the downloaded repository root on the Mac, run:
+
+   ```bash
+   npm run staging:attachments
+   ```
+
+3. Enter the staging Project URL and `sb_publishable_` key. When prompted, use the owner and non-owner email addresses and the newest email codes. The script uploads a harmless text probe, checks owner read/download and non-owner/anonymous denial, then removes the probe file and metadata row.
+4. Expected final output:
+
+   ```text
+   PASS staging private attachment upload, metadata, owner download, non-owner/anonymous denial, and cleanup; probe file and metadata were removed.
+   ```
+
+5. After the script passes, use `npm run staging:preview` from the downloaded project root to run a loopback-only local preview. Enter the staging URL and publishable key when prompted. Sign in using the owner email and the fresh code, then manually confirm uploads, previews, downloads, and deletion. No Vercel environment or deployment is required for this local check.
+
+The attachment acceptance script temporarily writes one test object and metadata row, then cleans both up. If interrupted before it prints PASS, check the private bucket for `DreamHub staging probe.txt` and remove any test object and matching row as the staging owner.
+
+## Attachment limits and privacy
+
+- Private bucket; no public URLs. Object keys use `<owner UUID>/<random file UUID>.<extension>`.
+- RLS restricts metadata and file operations to an invited owner account whose UID matches the first storage path segment.
+- Allowed file types: PDF, JPG/JPEG, PNG, WebP, UTF-8 TXT, and DOCX. Maximum 15 MB and 10 attachments per record.
+- Upload code checks file signatures; Storage also applies MIME and size limits. SVG, HTML, and executables are rejected. Images/PDF/text can preview; DOCX downloads without rendering.
+- Deletion removes the Storage object before deleting metadata. A failed cleanup keeps the row visible for retry.
+- Cloud file bytes are not end-to-end encrypted. Supabase’s service can access stored files. Avoid uploading files that should remain device-only.
+- File bytes are not included in workspace JSON backups. Backup manifests and complete attachment restore are not implemented.
+
+## Current gates
+
+| Gate | Status |
+|---|---|
+| Existing staging project and owner/non-owner accounts | Owner reports completed |
+| `001_private_sync.sql` authorization/RPC smoke | Owner reports PASS; state unchanged |
+| Apply `002_private_attachments.sql` to staging | Owner reports success |
+| Attachment upload/download/denial/delete acceptance script | Owner reports PASS; probe and metadata removed |
+| Browser page acceptance with staging configuration | Pending |
+| Production migration or deployment | Not performed |
+
+No production migration, production auth change, Vercel environment change, or deployment has been performed by this work.

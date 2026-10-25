@@ -7,13 +7,37 @@ test('automation rules are dry-run previews and omit sensitive records',()=>{con
 
 test('due-soon and low-energy triggers respect user limits and never include private or completed tasks',()=>{const records=[record('task',{id:'a',title:'One',date:'2026-04-03',energy:'Low'}),record('task',{id:'b',title:'Two',date:'2026-04-04',energy:'Low'}),record('task',{id:'done',title:'Done',date:'2026-04-03',status:'Done'}),record('task',{id:'private',title:'Private',date:'2026-04-03',sensitive:true})];const due=previewAutomations(stateWith('due-soon',records),{today:'2026-04-02'});assert.equal(due.length,2);const rescue=previewAutomations(stateWith('low-energy-rescue',records),{today:'2026-04-02',energy:'Low'});assert.deepEqual(rescue.map(x=>x.sourceId),['a']);});
 
+test('low-energy rescue only runs from an explicit user preview',()=>{
+ const state=stateWith('low-energy-rescue',[record('task',{id:'gentle',title:'One small step',energy:'Low'})]);
+ assert.equal(previewAutomations(state,{today:'2026-04-02',energy:'Low',allowInteractive:false}).length,0);
+ assert.equal(previewAutomations(state,{today:'2026-04-02',energy:'Low'}).length,1);
+});
+
 test('automation proposal approval is explicit, linked, audited and idempotent; dismissal creates nothing',()=>{const state=stateWith('goal-complete',[record('goal',{id:'g',title:'Finish portfolio',data:{progress:100}})]);const [proposal]=previewAutomations(state,{today:'2026-04-02'});assert(proposal);const approved=decideAutomationProposal(state,proposal,'approve',{today:'2026-04-02',at:'2026-04-02T12:00:00.000Z'});assert.equal(approved.item.type,'task');assert.deepEqual(approved.item.links,['g']);assert.equal(state.runs[0].decision,'approve');assert.equal(decideAutomationProposal(state,proposal,'approve').changed,false);assert.equal(state.records.filter(r=>r.type==='task').length,1);const next=stateWith('goal-complete',[record('goal',{id:'g2',title:'Another goal',data:{progress:100}})]),p=previewAutomations(next,{today:'2026-04-02'})[0];decideAutomationProposal(next,p,'dismiss',{at:'2026-04-02T12:00:00.000Z'});assert.equal(next.records.filter(r=>r.type==='task').length,0);assert.equal(next.runs[0].decision,'dismiss');});
+
+test('automation-created records cannot feed the same event rule again',()=>{
+ const source=record('note',{id:'seed',title:'Seed note',createdAt:'2026-04-02T10:00:00.000Z'}),state=stateWith('record-created',[source]);
+ state.rules[0].actionType='create-task';state.rules[0].createdAt='2026-04-01T00:00:00.000Z';state.rules[0].maxRunsPerDay=5;
+ const [proposal]=previewAutomations(state,{today:'2026-04-02',at:new Date('2026-04-02T11:00:00Z')});assert(proposal);
+ const created=decideAutomationProposal(state,proposal,'approve',{today:'2026-04-02',at:'2026-04-02T11:00:00.000Z'}).item;
+ assert.equal(created.data.automationRuleId,state.rules[0].id);
+ assert.deepEqual(previewAutomations(state,{today:'2026-04-02',at:new Date('2026-04-02T11:01:00Z')}),[]);
+});
 
 test('automation conditions validate supported fields and combine with AND or OR',()=>{assert.deepEqual(parseAutomationConditions('status | equals | Done\ncategory | contains | Creative'),[{field:'status',operator:'equals',value:'Done'},{field:'category',operator:'contains',value:'Creative'}]);assert.throws(()=>parseAutomationConditions('password | equals | x'),/Invalid condition/);const records=[record('goal',{id:'yes',title:'Portfolio',tags:['Creative'],data:{progress:100,category:'Creative'}}),record('goal',{id:'no',title:'Garden',tags:['Home'],data:{progress:100,category:'Home'}})];const state=stateWith('goal-complete',records);state.rules[0].actionType='create-note';state.rules[0].conditions=parseAutomationConditions('category | equals | Creative\ntag | contains | Creative');assert.deepEqual(previewAutomations(state,{today:'2026-04-02'}).map(x=>x.sourceId),['yes']);state.rules[0].conditions=parseAutomationConditions('category | equals | Creative\ntag | contains | Home');state.rules[0].conditionMode='any';assert.deepEqual(previewAutomations(state,{today:'2026-04-02'}).map(x=>x.sourceId),['yes','no']);assert.equal(automationActions.length,3);});
 
 test('quiet hours support daytime and overnight windows in the selected timezone',()=>{const rule={quietStart:'22:00',quietEnd:'07:00',timezone:'UTC'};assert.equal(quietHoursActive(rule,new Date('2026-04-02T23:00:00Z')),true);assert.equal(quietHoursActive(rule,new Date('2026-04-02T08:00:00Z')),false);assert.equal(quietHoursActive({...rule,quietStart:'09:00',quietEnd:'17:00'},new Date('2026-04-02T12:00:00Z')),true);});
 
 test('automation event and date triggers enter a deduplicated approval queue and pause-all stops new work',()=>{const state=stateWith('date-arrived',[record('task',{id:'today',title:'Send invoice',date:'2026-04-02'})]);state.rules[0].createdAt='2026-04-01T00:00:00.000Z';const [proposal]=previewAutomations(state,{today:'2026-04-02',at:new Date('2026-04-02T12:00:00Z')});assert.equal(proposal.sourceId,'today');assert.equal(queueAutomationProposals(state,[proposal]).length,1);assert.equal(queueAutomationProposals(state,[proposal]).length,0);state.settings.automationsPaused=true;assert.deepEqual(previewAutomations(state,{today:'2026-04-02'}),[]);});
+
+test('daily automation caps include queued approvals across repeated polling',()=>{
+ const rows=Array.from({length:5},(_,i)=>record('task',{id:'due-'+i,title:'Due item '+i,date:'2026-04-02'}));
+ const state=stateWith('date-arrived',rows);state.rules[0].createdAt='2026-04-01T00:00:00.000Z';state.rules[0].maxRunsPerDay=2;
+ const at=new Date('2026-04-02T12:00:00.000Z');
+ const first=previewAutomations(state,{today:'2026-04-02',at});assert.equal(first.length,2);
+ assert.equal(queueAutomationProposals(state,first,{at:at.toISOString()}).length,2);
+ assert.deepEqual(previewAutomations(state,{today:'2026-04-02',at}),[]);
+});
 
 test('approval inbox supports snooze, dismiss, undo, bounded retry and readable failure history',()=>{const state=stateWith('goal-complete',[record('goal',{id:'goal',title:'Portfolio',data:{progress:100}})]),[proposal]=previewAutomations(state,{today:'2026-04-02'}),[row]=queueAutomationProposals(state,[proposal],{at:'2026-04-02T12:00:00.000Z'});decideApproval(state,row.id,'snooze',{until:'2026-04-04',at:'2026-04-02T12:00:00.000Z'});assert.equal(row.status,'snoozed');decideApproval(state,row.id,'undo',{at:'2026-04-03T12:00:00.000Z'});assert.equal(row.status,'pending');decideApproval(state,row.id,'dismiss',{at:'2026-04-03T12:00:00.000Z'});assert.equal(row.status,'dismissed');decideApproval(state,row.id,'undo');recordAutomationFailure(state,proposal.proposalId,'temporary write issue',{at:'2026-04-03T12:00:00.000Z'});assert.equal(row.status,'retry');assert.match(state.runs.at(-1).result,/Failed attempt 1\/3/);recordAutomationFailure(state,proposal.proposalId,'temporary write issue',{at:'2026-04-03T12:10:00.000Z'});recordAutomationFailure(state,proposal.proposalId,'temporary write issue',{at:'2026-04-03T12:20:00.000Z'});assert.equal(row.status,'failed');assert.equal(row.attempts,3);});
 

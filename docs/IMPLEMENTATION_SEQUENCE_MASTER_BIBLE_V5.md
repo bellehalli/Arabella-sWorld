@@ -11,7 +11,7 @@ This sequence governs feature development on `main`, the current reference branc
 
 ## Starting point
 
-The current source inventory contains 46 navigation routes and 74 typed record forms, including the ten §5 advanced systems, a 16-week Academy scaffold, local encrypted backup/restore, and a local approval-based Automation Atelier. Source counts are generated from `catalog.mjs`; a route or form alone does not count as a complete advanced workflow. Capture & Continuity, Planning, and Studio/Finance/Home route acceptance are merged to `main` (PRs #19, #20, and #23). Career, wellness/care, relationships/pets/experiences/library, Grimoire, and Dream Estate route journeys and the new Career/statement-reconciliation acceptance flows are implemented and covered by focused automated/UI tests. Live financial account connections remain outside the local/manual product phase. Merged development work is not a production release.
+The current source inventory contains 47 navigation routes and 76 typed record forms, including the ten §5 advanced systems, a 16-week Academy scaffold, local encrypted backup/restore with attachment bundle support, and a local approval-based Automation Atelier. Source counts are generated from `catalog.mjs`; a route or form alone does not count as a complete advanced workflow. Capture & Continuity, Planning, and Studio/Finance/Home route acceptance are merged to `main` (PRs #19, #20, and #23). Career, wellness/care, relationships/pets/experiences/library, Grimoire, and Dream Estate route journeys and the new Career/statement-reconciliation acceptance flows are implemented and covered by focused automated/UI tests. Live financial account connections remain outside the local/manual product phase. Merged development work is not a production release.
 
 ## Phase 1 — Product workflows and advanced capabilities
 
@@ -59,10 +59,11 @@ Build against the Bible's route and journey contracts. Complete existing modules
 
 ## Phase 2 — Security and privacy
 
-- [ ] Inventory data classes, storage paths, sensitive views, backups, logs, and threat boundaries.
+- [x] Initial source inventory of main local/cloud data, care-vault storage, drafts, photos, imports/exports, automation history, and the current threat boundary is recorded in `SECURITY-PERSONAL-VAULT.md`. Live provider and browser behavior still need verification.
 - [ ] Design main-record protection and key recovery with vetted security components; do not call encrypted backups at-rest encryption.
 - [ ] Provision isolated staging only after plan, cost, and data terms are reviewed; implement and verify owner-scoped authorization/RLS.
-- [ ] Add private attachment storage, safe type/size handling, previews, owner checks, deletion cleanup, and backup manifests.
+- [x] Implement private attachment page/service, staging-only bucket and metadata migration, file-type/size validation, safe image/PDF/text preview, owner-path checks, and deletion cleanup. Cloud bytes are not end-to-end encrypted.
+- [ ] Apply the attachment migration and pass live staging owner/non-owner/anonymous upload, read, download, deletion, and cleanup acceptance. Attachment files are included in encrypted full backups with a restore preview; live staging recovery acceptance remains pending.
 - [ ] Test anonymous/other-account denial, session revocation, import/XSS, malicious files, quota/network failure, conflict retention, export/restore, and migration rollback using synthetic data.
 - [ ] Confirm secrets are absent from bundles/logs, destructive actions are recoverable or clearly irreversible, and opt-in integration permissions can be revoked.
 - [ ] Complete a written security review and pass staging acceptance before considering production approval.
@@ -77,12 +78,12 @@ Build against the Bible's route and journey contracts. Complete existing modules
 
 ## Phase 4 — Broader automation
 
-- [ ] Extend the existing local Atelier into the event-envelope/rule-run contract: record-created/updated, status/date, review, import, inventory, and budget triggers.
-- [ ] Add validated condition trees and internal actions for linking, checklists, digests, reminders, projections, tags, and staged calendar events.
-- [ ] Implement per-action permissions, pause-all, idempotency, loop protection, bounded retry/failure states, undo where possible, and human-readable audit history.
+- [x] Local Atelier supports record-created/updated, status/date, scheduled-review, planning, and pause-all triggers. Import, inventory, and budget event triggers remain open.
+- [ ] Expand flat AND/OR condition lists into the Bible's validated condition trees and add internal actions for checklists, digests, reminders, projections, tags, and staged calendar events. Current local actions create linked tasks, reflections, or inbox notes.
+- [x] Current local actions require approval; proposals are idempotent, exclude private records, prevent automation-created-record loops, respect pause-all and quiet hours, enforce caps across queued/settled actions, and use bounded retries with readable history. Broader per-action permission policies and undo for each action remain open.
 - [ ] Add the Bible's opt-in templates after their domain workflows are complete; sensitive and financial effects remain suggestion-only unless explicitly reviewed.
-- [ ] Keep browser-only schedules labeled app-open; add server scheduling only after cost/quota, authorization, and failure behavior are verified.
-- [ ] Test replay, dedupe, loop prevention, quiet hours/timezones, failure recovery, approvals, and disable/disconnect behavior.
+- [x] Browser schedules are labeled app-open and do not claim to run while closed. Server scheduling remains unprovisioned until cost/quota, authorization, and failure behavior are verified.
+- [x] Local tests cover deduplication, repeated polling caps, loop prevention, quiet hours/timezones, bounded failure/retry, approvals, and pause-all. Provider disconnect/revocation and server-worker recovery still require integration tests.
 
 ## Final release gate
 
@@ -206,3 +207,27 @@ No release is complete until feature acceptance, security review, visual/accessi
 - Private care vault supports a one-click Morning routine, user-entered product library with brand, size, status, and use notes, numbered ordered steps with product instructions, and step reordering. Product choices and sequence are user-supplied; no products are preselected or invented.
 - Wishlist now has three tiers (Need soon, Planned, Someday), each capped at 500 entries, with editable item name, category, optional entered price, retailer, link, and why. Wishlist records default to private classification and use existing edit/trash/export paths. Empty buckets are created implicitly; no products or prices are fabricated.
 - Verification: full `npm test` passes 251/251, including default Day view, all view switches, private wishlist create/capacity, ordered routine products and step movement.
+
+
+### Slice 14 — One-action ADHD focus handoff — 2026-10-24
+
+- Today now selects one ready task as a gentle next-step suggestion, preferring due work and considering user priority, a specific next action, and shorter estimated effort. Tasks blocked by prerequisites, completed tasks, and trashed tasks are excluded.
+- A single explicit control starts a 15-minute focus session already linked to the suggested task. It does not change the task's status; the user marks completion separately. The task remains editable from the focus page and can be changed through the task list.
+- Added engine regressions for due-task selection, prerequisite gating, unscheduled fallback, and non-mutation, plus a UI regression for the one-action handoff and completion semantics.
+- This reduces one small daily friction point. Closed-app reminders, secure cross-device continuity, real-device accessibility validation, and expanded approval automation remain material blockers to a 10/10 life-automation rating.
+
+
+### Slice 15 — Targeted export and sync revision hardening — 2026-10-24
+
+- Money CSV text values are now prefixed when they begin with spreadsheet formula characters, while the validated amount column remains a numeric cell. Added regression coverage for formula prefixes, control/space prefixes, and CSV quote escaping.
+- The private sync SQL now uses NULL-safe revision comparisons and rejects missing or null payload revisions at the database constraint, closing the SQL three-valued-logic gap found in the repo audit.
+- This migration is source-only until applied and verified in an isolated staging database. Main workspace data remains plaintext in localStorage when cloud is disabled, so this change does not complete the security phase.
+
+
+### Slice 16 — Security input bounds and automation cap review — 2026-10-24
+
+- Encrypted care imports reject files above 35 MB before reading. The decryptor validates salt/IV lengths and ciphertext size before base64 decoding. Tests verify oversize ciphertext rejection.
+- Automation daily caps now include queued, retrying, and snoozed approvals, so minute-by-minute polling cannot continually add new proposals above the configured cap. A repeat-poll regression covers this.
+- Low-energy rescue is interactive: the background open-app tick no longer supplies an implicit low-energy state. The user must choose a preview before it can propose those suggestions.
+- Source checks: full `npm test` passes 267/267; all `.mjs` and `api/*.js` files pass `node --check`; `git diff --check` passes. Offline dependency audit reports no known cached advisories; a narrow high-confidence credential-pattern scan found no matches. These checks are not a dedicated independent security scan or fresh online advisory/secret-history review.
+- Security phase remains open: main workspace localStorage is plaintext, cloud/RLS is not staging-tested, and auth, session, CSP/headers, and restore behavior still need real-host acceptance.

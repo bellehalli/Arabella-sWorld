@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {blank,record,Store} from '../core.mjs';
 import {encryptBackup} from '../vault-crypto.mjs';
-import {encryptMainBackup,decryptMainBackup} from '../main-backup.mjs';
+import {encryptMainBackup,decryptMainBackup,encryptMainBackupBundle,decryptMainBackupBundle} from '../main-backup.mjs';
 
 const passphrase='a unique DreamHub backup phrase 2026';
 const memory=()=>{const data=new Map();return {getItem:k=>data.get(k)||null,setItem:(k,v)=>data.set(k,v),removeItem:k=>data.delete(k)}};
@@ -41,6 +41,14 @@ test('encrypted full backup supports larger writing entries',async()=>{
  const envelope=await encryptMainBackup(source,passphrase);
  const restored=await decryptMainBackup(envelope,passphrase);
  assert.equal(restored.records[0].body,body);
+});
+
+test('encrypted backup bundle carries attachment bytes and metadata without plaintext leakage',async()=>{
+ const source=blank(),content=Buffer.from('%PDF-1.7 harmless sample').toString('base64');
+ const files=[{recordId:'general-vault',fileName:'sample.pdf',mimeType:'application/pdf',byteSize:24,sha256:'a'.repeat(64),content}];
+ const envelope=await encryptMainBackupBundle(source,passphrase,files);
+ assert.ok(!JSON.stringify(envelope).includes('sample.pdf'));
+ assert.deepEqual(await decryptMainBackupBundle(envelope,passphrase),{state:source,attachments:files});
 });
 
 test('full restore validates first and leaves current state unchanged when persistence fails',async()=>{

@@ -1,0 +1,18 @@
+ARABELLA’S WORLD — STAGING UI CHECK
+
+This local preview connects only to the staging Supabase project. It does not deploy to Vercel or change production.
+
+1. Extract this ZIP and open Terminal in the extracted Arabella-sWorld folder.
+2. Run: npm ci --ignore-scripts
+3. Run: npm run staging:preview
+4. Enter the staging project URL and its sb_publishable_ key. Never enter a secret or service-role key.
+5. Open http://127.0.0.1:4173 and sign in with the invited owner email and a fresh email code.
+6. In a writing page, try Bold, Italic, lists, Quote and Link. Close and reopen without saving to confirm the draft returns. Save an edit, then restore an earlier version into the editor.
+7. Save an encrypted full backup from Settings. If signed in with cloud enabled, its attachment files are included up to 14 MB total. Keep the backup passphrase separately.
+8. In Settings → My private attachments, upload a harmless TXT file. Export a backup, delete the test attachment, then import the backup and confirm the restore preview recovers it. Delete the test attachment again if desired.
+9. To check two-device behavior, sign in with the same invited owner on two browsers/devices. Save separate pages from each. Then edit the same page on both and confirm a stale save remains available for conflict review.
+10. To check offline reconnect, open an existing page, disconnect one device from the network, save the page, reconnect, and review Settings → Reconnect queue. Choose keep cloud, save as a copy, or replace only after reviewing the conflict.
+11. The repo includes automated two-device, offline queue, conflict, editor UI, and encrypted backup checks. Run: npm test
+12. Return to Terminal and press Control+C to stop the local preview.
+
+The live staging migration and attachment lifecycle check were already completed. Do not rerun SQL migrations. Use harmless test files only; cloud attachment files are not end-to-end encrypted. Remove test uploads when finished.
