@@ -19,10 +19,10 @@ export async function validateAttachmentFile(file){
  const ascii=(offset,length)=>String.fromCharCode(...bytes.subarray(offset,offset+length));
  const valid=file.type==='application/pdf'?ascii(0,5)==='%PDF-'
   :file.type==='image/jpeg'?bytes[0]===0xff&&bytes[1]===0xd8&&bytes[2]===0xff
-  :file.type==='image/png'?ascii(0,8)==='\x89PNG\r\n\x1a\n'
+  :file.type==='image/png'?bytes[0]===0x89&&bytes[1]===0x50&&bytes[2]===0x4e&&bytes[3]===0x47&&bytes[4]===0x0d&&bytes[5]===0x0a&&bytes[6]===0x1a&&bytes[7]===0x0a
   :file.type==='image/webp'?ascii(0,4)==='RIFF'&&ascii(8,4)==='WEBP'
   :file.type==='text/plain'?(()=>{try{new TextDecoder('utf-8',{fatal:true}).decode(bytes);return !bytes.includes(0)}catch{return false}})()
-  :file.type==='application/vnd.openxmlformats-officedocument.wordprocessingml.document'?ascii(0,4)==='PK\x03\x04'
+  :file.type==='application/vnd.openxmlformats-officedocument.wordprocessingml.document'?bytes[0]===0x50&&bytes[1]===0x4b&&bytes[2]===0x03&&bytes[3]===0x04
   :false;
  if(!valid)throw Error('File contents do not match the selected file type.');
  return {file_name:file.name,mime_type:file.type,byte_size:file.size};
