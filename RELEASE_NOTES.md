@@ -15,3 +15,8 @@ Deployment target: preview of the existing belle-dreamhub Vercel project. Origin
 - Finance statement CSV review can explicitly reconcile likely matches or import selected unmatched rows. Ambiguous and repeated-in-file rows stay unselected. This remains a manual workflow; no bank is connected.
 - Existing care, relationship, pet, experience, library, Grimoire, and Dream Estate workflows are represented in the current source and documented in the feature acceptance regression procedure.
 - This is still a development review build. Live bank connections, production security acceptance, real-device visual/accessibility QA, and the broader automation phase are not complete.
+
+
+## Main branch UX update · 2026-10-24
+
+- Added the compact Dream Estate world hub with recent-place shortcuts, a prominent desktop travel link, and a shorter home opening.
