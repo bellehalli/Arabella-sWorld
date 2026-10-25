@@ -1,6 +1,6 @@
 # Security acceptance checklist — 2026-10-25
 
-**Scope:** local source bundle and the current hosted Vercel Preview. This is an engineering review, not an independent penetration test or production approval. No production data, Supabase production settings, or deployment configuration were changed.
+**Scope:** local source bundle and the current hosted Vercel Preview. This is an engineering review, not an independent penetration test or production approval. No production data, Supabase production settings, or production deployment settings were changed. The staging URL was added to Preview for the review branch only.
 
 ## 1. Attachment upload validation
 
@@ -22,10 +22,10 @@
 
 ## 4. Hosted headers, access, bundles, and logs
 
-- Authenticated Vercel fetches of Preview `/`, `/app.mjs`, `/api/config`, and a missing `/attachments.html` route showed CSP, HSTS, `nosniff`, frame denial, strict referrer policy, and noindex headers. API config used `Cache-Control: no-store`; static resources were publicly cacheable. The missing attachment route returned 404 with the same security headers.
-- Preview `/api/config` returned HTTP 200 `{"enabled":false}`. The Preview is not connected to staging. Its served `/app.mjs` is an older bundle and does not contain the current local changes.
+- Authenticated Vercel fetches of the new Preview `/` and `/api/config` showed CSP, HSTS, `nosniff`, frame denial, strict referrer policy, and noindex headers. API config uses `Cache-Control: no-store`. The initial Preview was stale; the current Preview is the review branch deployment.
+- Current Preview `/api/config` returns HTTP 503 because `SUPABASE_PUBLISHABLE_KEY` is not configured. It correctly fails closed. The staging `SUPABASE_URL` is set for this branch only.
 - Vercel reports SSO protection enabled across environments. An external unauthenticated browser check was not available here, so the actual access-denial response remains unverified.
-- The current Preview returned no runtime logs for the checked 50-minute window. A recursive scan of the current Preview JavaScript import graph fetched 12 modules (about 363 KB) and found no high-confidence AWS, Supabase service-role, JWT, or private-key patterns. The entry bundle is stale and lacks the current local-vault idle-lock code. This scan does not cover every possible secret format or Git history; the extracted source is not a Git checkout.
+- The new Preview had no runtime logs in the checked 50-minute window. A recursive scan of its JavaScript import graph fetched 53 modules (about 958 KB) and found no high-confidence AWS, Supabase service-role, JWT, or private-key patterns. It contains the current local-vault idle-lock code. This scan does not cover every possible secret format or Git history; the extracted source is not a Git checkout.
 
 ## 5. Dependency and secret review; incident process
 
@@ -36,7 +36,7 @@
 
 ## 6. Hosted Vercel Preview against staging
 
-- **Blocked:** the currently accessible Preview is stale and `/api/config` is disabled. Login, denial across accounts, two-device saves/conflicts, export/restore, and network/storage failure cases cannot be validated against staging on this deployment.
+- **Waiting on one Preview setting:** add `SUPABASE_PUBLISHABLE_KEY` for the staging project to the `security-review-preview` branch in Vercel Preview settings. Then redeploy and verify `/api/config` reports enabled before running hosted login, access-denial, two-device, conflict, export/restore, and failure checks.
 - The owner previously reported that separate staging owner/non-owner authorization and attachment acceptance checks passed from local scripts. That does not substitute for the requested hosted Preview flow.
 
 ## 7. Device and accessibility checks
