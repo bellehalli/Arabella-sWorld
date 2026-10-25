@@ -1,4 +1,5 @@
 import {Store,blank,validate} from './core.mjs';
+import {openCloudDraftStorage} from './cloud-draft-storage.mjs';
 export class CloudStore extends Store {
  constructor(client,user,state,storage=null){super({getItem:()=>null});this.client=client;this.user=user;this.state=validate(state);this.cloud=true;this.storage=storage;this.queueKey=`dreamhub-draft:${user.id}:cloud-reconnect-queue`;this.pending=this.#readQueue();this.conflicts=[];}
  #readQueue(){try{const value=JSON.parse(this.storage?.getItem(this.queueKey)||'[]');return Array.isArray(value)?value:[];}catch{return [];}}
@@ -66,7 +67,7 @@ if(!config.enabled)return {enabled:false};
  if(!/^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(config.url)||typeof config.publishableKey!=='string'||!config.publishableKey)throw Error('Cloud setup is incomplete.');
  const {createClient}=await import('./vendor/supabase.mjs');const client=createClient(config.url,config.publishableKey,{auth:{flowType:'pkce',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
  const {data:session}=await client.auth.getSession();if(!session.session)return {enabled:true,client};const {data,error}=await client.auth.getUser();if(error||!data.user)return {enabled:true,client};
- const {data:membership,error:memberError}=await client.from('dreamhub_owners').select('owner_id').eq('owner_id',data.user.id).maybeSingle();if(memberError)throw Error('Could not check this account’s Dreamhub access. Please try again.');if(!membership){await clearUninvitedAuthSession(client);return {enabled:true,client,notice:'This account is not set up for this Dreamhub. Sign in with the invited account or ask the owner to check access.'};}const store=new CloudStore(client,data.user,blank(),storage);await store.refresh();await store.syncPending();globalThis.window?.addEventListener?.('online',()=>store.syncPending());watchAuthSession(client,()=>globalThis.window?.location?.reload?.());return {enabled:true,client,user:data.user,store};
+ const {data:membership,error:memberError}=await client.from('dreamhub_owners').select('owner_id').eq('owner_id',data.user.id).maybeSingle();if(memberError)throw Error('Could not check this account’s Dreamhub access. Please try again.');if(!membership){await clearUninvitedAuthSession(client);return {enabled:true,client,notice:'This account is not set up for this Dreamhub. Sign in with the invited account or ask the owner to check access.'};}const protectedStorage=await openCloudDraftStorage(storage,data.user.id);const store=new CloudStore(client,data.user,blank(),protectedStorage);await store.refresh();await store.syncPending();globalThis.window?.addEventListener?.('online',()=>store.syncPending());watchAuthSession(client,()=>globalThis.window?.location?.reload?.());return {enabled:true,client,user:data.user,store,storage:protectedStorage};
 }
 export async function clearUninvitedAuthSession(client){
  const {error}=await client.auth.signOut({scope:'local'});
