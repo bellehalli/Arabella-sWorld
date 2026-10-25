@@ -40,7 +40,7 @@ The application itself is browser-native ES modules. The pinned Supabase client 
 
 ## Storage and privacy
 
-Device-only state: an AES-GCM envelope at `arabella-dreamhub-v2` in localStorage, unlocked by the local vault. Drafts use encrypted envelopes at `dreamhub-draft:local:<record or type>` or account-scoped draft keys in cloud mode. The old `belle-dreamhub-v1` key is never changed. Export format is versioned JSON `{format, exportedAt, state}`. Import validates first, previews additions, identical IDs and conflicts; approved imports add only new records, preserve current conflicts and record provenance. Legacy v1 migration preserves raw source fields and ledger provenance. It does not invent missing dates or habit history. Local multi-tab writes use Web Locks when supported; fallback is best effort and should not be treated as a distributed database lock.
+Device-only state: an AES-GCM envelope at arabella-dreamhub-v2 in localStorage, unlocked by the local vault. Device-only drafts use encrypted envelopes at dreamhub-draft:local:<record or type>. In cloud mode, account-scoped drafts and the offline reconnect queue use AES-GCM envelopes in localStorage. Their non-exportable per-account WebCrypto key is kept in IndexedDB, so drafts survive reload without another passphrase. On first cloud sign-in, existing account drafts are migrated and verified before they are used. An unreadable encrypted draft is preserved and reported without blocking access to saved cloud pages. Cloud draft encryption requires IndexedDB; if the browser key store is unavailable, cloud startup fails closed. This protects stored bytes from casual localStorage inspection; it does not protect against code running in the signed-in page or a compromised browser profile. The cloud workspace itself is not end-to-end encrypted. The old belle-dreamhub-v1 key is never changed. Export format is versioned JSON {format, exportedAt, state}. Import validates first, previews additions, identical IDs and conflicts; approved imports add only new records, preserve current conflicts and record provenance. Legacy v1 migration preserves raw source fields and ledger provenance. It does not invent missing dates or habit history. Local multi-tab writes use Web Locks when supported; fallback is best effort and should not be treated as a distributed database lock.
 
 Trash is retained until manually purged. Deleted or old snapshots may also exist in exported backups. Writing history is bounded to ten prior versions. Photos consume localStorage capacity; a failed storage write leaves the editor and draft available, never claims a committed save.
 
@@ -69,4 +69,12 @@ No database, hosting plan, external account, billing setting, or production depl
 
 Repository: https://github.com/bellehalli/Arabella-sWorld
 
-Capture & Continuity, Planning, and the Studio/Finance/Home route-acceptance slice are merged to `main`. This remains a development review build, not a production release.
+Capture & Continuity, Planning, and the Studio/Finance/Home route-acceptance slice are merged to `main`. Production is live; changes on a branch are not live until merged and deployed.
+
+
+## Current security and deployment status — 2026-10-25
+
+- Production sign-in is active, and the owner confirmed the browser retains the session. Vercel project settings report SSO protection across environments; an independent logged-out denial test was not available for this review.
+- The owner reports that staging authorization and attachment acceptance checks passed. These results were not independently rerun in this review.
+- This security branch adds local encryption for cloud-mode drafts and reconnect queues; the change is not active in production until merged and deployed. It requires IndexedDB and keeps the account sign-in flow passphrase-free.
+- GitHub currently reports this repository as public. Change repository visibility to private to meet the personal-only source requirement. A visibility change does not recall existing clones or caches.
