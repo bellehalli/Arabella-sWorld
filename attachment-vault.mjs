@@ -15,6 +15,7 @@ export async function validateAttachmentFile(file){
  if(!expected||extension!==expected&&!(file.type==='image/jpeg'&&extension==='jpeg'))throw Error('Unsupported file type or file extension.');
  if(file.name.length>180||/[\\/\u0000-\u001f]/.test(file.name))throw Error('Unsafe attachment filename.');
  const bytes=new Uint8Array(await file.arrayBuffer());
+ if(bytes.byteLength!==file.size)throw Error('File contents do not match the reported size.');
  const ascii=(offset,length)=>String.fromCharCode(...bytes.subarray(offset,offset+length));
  const valid=file.type==='application/pdf'?ascii(0,5)==='%PDF-'
   :file.type==='image/jpeg'?bytes[0]===0xff&&bytes[1]===0xd8&&bytes[2]===0xff
