@@ -8,12 +8,22 @@ const OWNER_ID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9
 const EXTENSIONS=Object.freeze({'application/pdf':'pdf','image/jpeg':'jpg','image/png':'png','image/webp':'webp','text/plain':'txt','application/vnd.openxmlformats-officedocument.wordprocessingml.document':'docx'});
 function checkContext(client,ownerId){if(!client||!OWNER_ID.test(ownerId||''))throw Error('Sign in to your private vault first.');}
 function checkRecordId(recordId){const value=String(recordId||'');if(!/^[a-zA-Z0-9_-]{1,128}$/.test(value))throw Error('Choose a valid record for this attachment.');return value;}
-export function validateAttachmentFile(file){
- if(!file||typeof file.name!=='string'||!Number.isSafeInteger(file.size)||file.size<1)throw Error('Choose a valid file.');
+export async function validateAttachmentFile(file){
+ if(!file||typeof file.name!=='string'||typeof file.arrayBuffer!=='function'||!Number.isSafeInteger(file.size)||file.size<1)throw Error('Choose a valid file.');
  if(file.size>ATTACHMENT_MAX_BYTES)throw Error('Attachment exceeds the 15 MB limit.');
  const extension=file.name.split('.').at(-1)?.toLowerCase(),expected=EXTENSIONS[file.type];
  if(!expected||extension!==expected&&!(file.type==='image/jpeg'&&extension==='jpeg'))throw Error('Unsupported file type or file extension.');
  if(file.name.length>180||/[\\/\u0000-\u001f]/.test(file.name))throw Error('Unsafe attachment filename.');
+ const bytes=new Uint8Array(await file.arrayBuffer());
+ const ascii=(offset,length)=>String.fromCharCode(...bytes.subarray(offset,offset+length));
+ const valid=file.type==='application/pdf'?ascii(0,5)==='%PDF-'
+  :file.type==='image/jpeg'?bytes[0]===0xff&&bytes[1]===0xd8&&bytes[2]===0xff
+  :file.type==='image/png'?ascii(0,8)==='\x89PNG\r\n\x1a\n'
+  :file.type==='image/webp'?ascii(0,4)==='RIFF'&&ascii(8,4)==='WEBP'
+  :file.type==='text/plain'?(()=>{try{new TextDecoder('utf-8',{fatal:true}).decode(bytes);return !bytes.includes(0)}catch{return false}})()
+  :file.type==='application/vnd.openxmlformats-officedocument.wordprocessingml.document'?ascii(0,4)==='PK\x03\x04'
+  :false;
+ if(!valid)throw Error('File contents do not match the selected file type.');
  return {file_name:file.name,mime_type:file.type,byte_size:file.size};
 }
 export function attachmentPreviewKind(mime){if(typeof mime!=='string')return 'download';if(mime.startsWith('image/'))return 'image';if(mime==='application/pdf')return 'pdf';if(mime==='text/plain')return 'text';return 'download';}
@@ -27,7 +37,7 @@ export async function listAttachments(client,ownerId,recordId){
  return (data||[]).filter(x=>x&&ownedPath(x.storage_path,ownerId));
 }
 export async function uploadAttachment(client,ownerId,recordId,file){
- checkContext(client,ownerId);const record=checkRecordId(recordId),meta=validateAttachmentFile(file),id=crypto.randomUUID(),path=`${ownerId}/${id}.${meta.mime_type==='image/jpeg'&&file.name.toLowerCase().endsWith('.jpeg')?'jpeg':EXTENSIONS[meta.mime_type]}`;
+ checkContext(client,ownerId);const record=checkRecordId(recordId),meta=await validateAttachmentFile(file),id=crypto.randomUUID(),path=`${ownerId}/${id}.${meta.mime_type==='image/jpeg'&&file.name.toLowerCase().endsWith('.jpeg')?'jpeg':EXTENSIONS[meta.mime_type]}`;
  const uploaded=await client.storage.from(BUCKET).upload(path,file,{contentType:meta.mime_type,upsert:false,cacheControl:'0'});
  if(uploaded.error)throw Error('Private upload failed: '+uploaded.error.message);
  const inserted=await client.from(TABLE).insert({id,owner_id:ownerId,record_id:record,...meta,storage_path:path});
