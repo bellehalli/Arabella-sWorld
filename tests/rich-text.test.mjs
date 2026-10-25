@@ -23,6 +23,6 @@ test('sanitizer fallback escapes all markup when DOMParser is unavailable',()=>{
  try{
   const clean=sanitizeRichHtml('hello <<script>steal()</script><img src=x onerror=steal()> & goodbye');
   assert.equal(clean,'hello &lt;&lt;script&gt;steal()&lt;/script&gt;&lt;img src=x onerror=steal()&gt; &amp; goodbye');
-  assert.doesNotMatch(clean,/<(?:script|img)\\b/i);
+  assert.doesNotMatch(clean,/<(?:script|img)\b/i);
  }finally{if(original!==undefined)globalThis.DOMParser=original;}
 });
