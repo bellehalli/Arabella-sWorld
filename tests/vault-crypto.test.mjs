@@ -2,3 +2,7 @@ import test from 'node:test';import assert from 'node:assert/strict';import {enc
 test('encrypted backup restores exact records and does not expose plaintext',async()=>{const data=emptyCare();data.products.push({id:'1',name:'Sensitive personal product',status:'owned'});const x=await encryptBackup(data,'a unique vault passphrase 123');assert.equal(x.format,'dreamhub-vault-backup');assert.ok(!JSON.stringify(x).includes('Sensitive personal product'));assert.deepEqual(await decryptBackup(x,'a unique vault passphrase 123'),data);});
 test('incorrect password and ciphertext modification are rejected',async()=>{const x=await encryptBackup(emptyCare(),'a unique vault passphrase 123');await assert.rejects(decryptBackup(x,'another unique vault passphrase'),/Incorrect passphrase/);x.ciphertext=x.ciphertext.slice(0,-4)+'AAAA';await assert.rejects(decryptBackup(x,'a unique vault passphrase 123'));});
 test('short passwords and invalid envelopes are rejected',async()=>{await assert.rejects(encryptBackup({},'short'),/at least 16/);await assert.rejects(decryptBackup({format:'not-vault'},'long enough passphrase'),/Unsupported/);});
+test('oversized encrypted payloads are rejected before base64 decoding',async()=>{
+ const blob={format:'dreamhub-vault-backup',version:1,kdf:'PBKDF2-SHA256',iterations:600000,cipher:'AES-256-GCM',salt:'A'.repeat(24),iv:'A'.repeat(16),ciphertext:'A'.repeat(33333337)};
+ await assert.rejects(decryptBackup(blob,'a unique vault passphrase 123'),/oversized backup envelope/);
+});

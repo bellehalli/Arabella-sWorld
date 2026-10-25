@@ -58,14 +58,16 @@ function sourceCandidates(rule,records,{today,energy,at=new Date()}={}){
  if(rule.trigger==='low-energy-rescue')rows.sort((a,b)=>(validDate(a.date)?a.date:'9999-12-31').localeCompare(validDate(b.date)?b.date:'9999-12-31')||(b.favorite?1:0)-(a.favorite?1:0)).splice(1);
  return rows;
 }
-export function previewAutomations(state,{today=new Date().toISOString().slice(0,10),energy='Low',at=new Date()}={}){
+export function previewAutomations(state,{today=new Date().toISOString().slice(0,10),energy='Low',at=new Date(),allowInteractive=true}={}){
  if(!validDate(today))throw Error('Choose a valid preview date.');
  if(state.settings?.automationsPaused)return [];
  const records=alive(state.records||[]),runs=state.runs||[],proposals=[];
- for(const rule of (state.rules||[]).filter(r=>r.enabled&&r.automationVersion===1&&triggerKinds.has(r.trigger)&&actions.has(actionFor(r)))){
+ for(const rule of (state.rules||[]).filter(r=>r.enabled&&r.automationVersion===1&&triggerKinds.has(r.trigger)&&actions.has(actionFor(r))&&(allowInteractive||r.trigger!=='low-energy-rescue'))){
   if(quietHoursActive(rule,at))continue;
   const cap=Math.max(1,Math.min(25,Number(rule.maxRunsPerDay)||5)),zoneDay=localDate(at,rule.timezone);
-  const count=runs.filter(x=>x.ruleId===rule.id&&['approve','dismiss'].includes(x.decision)&&localDate(new Date(x.at),rule.timezone)===zoneDay).length;if(count>=cap)continue;
+  const completedCount=runs.filter(x=>x.ruleId===rule.id&&['approve','dismiss'].includes(x.decision)&&localDate(new Date(x.at),rule.timezone)===zoneDay).length;
+  const queuedCount=(state.approvals||[]).filter(x=>x.ruleId===rule.id&&['pending','retry','snoozed'].includes(x.status)&&x.createdAt&&localDate(new Date(x.createdAt),rule.timezone)===zoneDay).length;
+  if(completedCount+queuedCount>=cap)continue;
   if(rule.trigger==='scheduled-review'&&rule.scheduleTime){let hm;try{hm=new Intl.DateTimeFormat('en-GB',{timeZone:rule.timezone||undefined,hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(at);}catch{continue;}if(hm<rule.scheduleTime)continue;}
   const candidates=sourceCandidates(rule,records,{today,energy,at});
   for(const source of candidates){
@@ -76,7 +78,7 @@ export function previewAutomations(state,{today=new Date().toISOString().slice(0
    const actionType=actionFor(rule),title=actionType==='prepare-review'?`Reflect on: ${source.title}`:actionType==='create-note'?`Remember: ${source.title}`:rule.trigger==='application-submitted'?`Follow up: ${source.title}`:rule.trigger==='goal-complete'?`Celebrate and reflect: ${source.title}`:rule.trigger==='low-energy-rescue'?`One gentle step: ${source.title}`:`Prepare for: ${source.title}`;
    const action=automationActions.find(x=>x.id===actionType)?.label||'Create a local item';
    proposals.push({proposalId:token,ruleId:rule.id,ruleName:rule.name,sourceId:source.id,sourceType:source.type,title,date,minutes:rule.trigger==='low-energy-rescue'?Math.min(15,source.minutes||15):15,reason:`${rule.name}: ${source.title}`,actionType,energy,action:`${action}. Review and approve this suggestion before it is saved.`});
-   if(proposals.filter(p=>p.ruleId===rule.id).length>=cap)break;
+   if(completedCount+queuedCount+proposals.filter(p=>p.ruleId===rule.id).length>=cap)break;
   }
  }
  return proposals;

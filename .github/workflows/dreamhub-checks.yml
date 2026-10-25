@@ -7,6 +7,8 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -14,8 +16,13 @@ jobs:
           node-version: '22'
       - name: Install dependencies
         run: npm ci
+      - name: Audit dependency advisories
+        run: npm audit --audit-level=high
       - name: Check JavaScript syntax
         run: |
-          for file in *.mjs; do node --check "$file"; done
+          for file in *.mjs tests/*.mjs api/*.js; do node --check "$file"; done
       - name: Run deterministic tests
         run: node --test tests/*.test.mjs
+      - name: Check for committed environment files
+        run: |
+          if git ls-files | grep -E '(^|/)\\.env($|\\.)'; then echo 'Do not commit environment files'; exit 1; fi

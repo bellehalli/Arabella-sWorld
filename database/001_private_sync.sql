@@ -16,7 +16,7 @@ create table if not exists public.dreamhub_state (
  revision bigint not null check (revision > 0),
  payload jsonb not null check (jsonb_typeof(payload) = 'object' and payload ->> 'schema' = '2'),
  updated_at timestamptz not null default now(),
- constraint payload_revision_matches check ((payload ->> 'revision')::bigint = revision),
+ constraint payload_revision_matches check (payload ? 'revision' and jsonb_typeof(payload -> 'revision') = 'number' and (payload ->> 'revision')::bigint = revision),
  constraint bounded_payload check (octet_length(payload::text) <= 10000000)
 );
 alter table public.dreamhub_state enable row level security;
@@ -33,12 +33,14 @@ create or replace function public.dreamhub_save(p_expected bigint,p_payload json
 declare current_revision bigint; next_revision bigint;
 begin
  if auth.uid() is null or not exists(select 1 from public.dreamhub_owners where owner_id=auth.uid()) then raise exception 'NOT_AUTHORIZED'; end if;
+ if jsonb_typeof(p_payload) is distinct from 'object' then raise exception 'INVALID_PAYLOAD'; end if;
  perform pg_advisory_xact_lock(hashtextextended(auth.uid()::text,0));
  select revision into current_revision from public.dreamhub_state where owner_id=auth.uid() for update;
  current_revision := coalesce(current_revision,0);
- if current_revision <> p_expected then raise exception 'VERSION_CONFLICT'; end if;
+ if current_revision is distinct from p_expected then raise exception 'VERSION_CONFLICT'; end if;
  next_revision := current_revision+1;
- if (p_payload->>'revision')::bigint <> next_revision then raise exception 'INVALID_REVISION'; end if;
+ if jsonb_typeof(p_payload->'revision') is distinct from 'number' then raise exception 'INVALID_REVISION'; end if;
+ if (p_payload->>'revision')::bigint is distinct from next_revision then raise exception 'INVALID_REVISION'; end if;
  insert into public.dreamhub_state(owner_id,revision,payload) values(auth.uid(),next_revision,p_payload)
  on conflict(owner_id) do update set revision=excluded.revision,payload=excluded.payload,updated_at=now();
  return next_revision;
