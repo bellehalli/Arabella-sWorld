@@ -66,9 +66,14 @@ if(!config.enabled)return {enabled:false};
  if(!/^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(config.url)||typeof config.publishableKey!=='string'||!config.publishableKey)throw Error('Cloud setup is incomplete.');
  const {createClient}=await import('./vendor/supabase.mjs');const client=createClient(config.url,config.publishableKey,{auth:{flowType:'pkce',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
  const {data:session}=await client.auth.getSession();if(!session.session)return {enabled:true,client};const {data,error}=await client.auth.getUser();if(error||!data.user)return {enabled:true,client};
- const {data:membership,error:memberError}=await client.from('dreamhub_owners').select('owner_id').eq('owner_id',data.user.id).maybeSingle();if(memberError||!membership)throw Error('This account has not been invited to this private Dreamhub. Sign out or ask the owner to check setup.');const store=new CloudStore(client,data.user,blank(),storage);await store.refresh();await store.syncPending();globalThis.window?.addEventListener?.('online',()=>store.syncPending());watchAuthSession(client,()=>globalThis.window?.location?.reload?.());return {enabled:true,client,user:data.user,store};
+ const {data:membership,error:memberError}=await client.from('dreamhub_owners').select('owner_id').eq('owner_id',data.user.id).maybeSingle();if(memberError)throw Error('Could not check this account’s Dreamhub access. Please try again.');if(!membership){await clearUninvitedAuthSession(client);return {enabled:true,client,notice:'This account is not set up for this Dreamhub. Sign in with the invited account or ask the owner to check access.'};}const store=new CloudStore(client,data.user,blank(),storage);await store.refresh();await store.syncPending();globalThis.window?.addEventListener?.('online',()=>store.syncPending());watchAuthSession(client,()=>globalThis.window?.location?.reload?.());return {enabled:true,client,user:data.user,store};
 }
-export function loginGate(root,client){
+export async function clearUninvitedAuthSession(client){
+ const {error}=await client.auth.signOut({scope:'local'});
+ if(error)throw Error('This account is not invited, and this browser could not switch accounts. Open a private window and sign in with the invited account.');
+}
+
+export function loginGate(root,client,notice=''){
  root.innerHTML=`<main class="login-page"><span class="login-heart">♡</span><p class="eyebrow">ARABELLA’S PRIVATE LITTLE UNIVERSE</p><h1>Welcome <em>home.</em></h1><p>A little space that belongs to you.</p><form id="auth-form"><label>Email<input name="email" type="email" autocomplete="email" required></label><label id="code-label" hidden>Sign-in code<input name="token" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="12"></label><button class="heart-pill">Email my sign-in code ♡</button><button id="resend-code" class="softbutton" type="button" hidden>Send a new code</button><p id="auth-status" role="status" aria-live="polite"></p></form></main>`;
  const form=root.querySelector('#auth-form');
  const emailInput=form.elements.email;
@@ -77,6 +82,7 @@ export function loginGate(root,client){
  const button=form.querySelector('button[type="submit"],button:not([type])');
  const resend=root.querySelector('#resend-code');
  const status=root.querySelector('#auth-status');
+ if(notice)status.textContent=notice;
  let codeSent=false;
  async function sendCode(){
   const email=String(emailInput.value||'').trim();
